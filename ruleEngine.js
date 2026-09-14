@@ -2,120 +2,91 @@
 const fs = require('fs');
 const path = require('path');
 
-// 1. Laad het parameters.json bestand
-function loadParameters() {
-  const filePath = path.join(__dirname, 'parameters.json');
-  const rawData = fs.readFileSync(filePath, 'utf-8');
-  return JSON.parse(rawData);
+// Laad parameters.json (regels en afhankelijkheden)
+const parametersPath = path.join(__dirname, 'parameters.json');
+let parametersData = { rule_sets: [] };
+if (fs.existsSync(parametersPath)) {
+  parametersData = JSON.parse(fs.readFileSync(parametersPath, 'utf-8'));
 }
 
-// 2. Core Rule Engine Logica
-function processOrder(order) {
-  const config = loadParameters();
-  const inputText = (order.text || '').toLowerCase();
-  const inputItems = order.items || [];
-  
-  let originalAmount = 0;
-  let extraAmount = 0;
-  const generatedItems = [];
-  const triggeredRules = new Set();
+// Simpele helper om een fictief prijzenboek te simuleren of in te lezen
+function getStandardPrice(code) {
+  // Standaard basisprijzen voor hoofdregels ter demonstratie
+  const priceBook = {
+    "MO-2001": 180.00,
+    "MO-3002": 150.00,
+    "MO-3003": 95.00,
+    "MO-3004": 40.00,
+    "MO-4001": 450.00,
+    "MO-4005": 650.00
+  };
+  return priceBook[code] || 50.00; // Fallback prijs als code niet direct gevonden wordt
+}
 
-  // Bereken oorspronkelijke opdrachtsom
-  inputItems.forEach(item => {
-    originalAmount += item.quantity * item.unitPrice;
+function processOrder(orderData) {
+  let originalAmount = 0;
+  const triggeredItemsMap = new Map();
+  const processedMainCodes = new Set();
+
+  // Stap 1: Bepaal de eenheidsprijs en het oorspronkelijke bedrag van de hoofdregels
+  orderData.items.forEach(item => {
+    const unitPrice = getStandardPrice(item.code);
+    item.unitPrice = unitPrice;
+    item.totalPrice = unitPrice * (item.quantity || 1);
+    originalAmount += item.totalPrice;
+    processedMainCodes.add(item.code);
   });
 
-  // Scan alle regels uit parameters.json
-  config.rule_sets.forEach(rule => {
-    let isTriggered = false;
+  // Stap 2: Controleer welke regels triggeren op ontbrekende nevenposten
+  parametersData.rule_sets.forEach(ruleSet => {
+    // Check of een van de trigger codes aanwezig is in de opdracht
+    const hasTriggerCode = ruleSet.trigger_codes.some(code => processedMainCodes.has(code));
+    
+    // Check optioneel op trefwoorden in de ruwe tekst
+    const hasKeyword = ruleSet.trigger_keywords && ruleSet.trigger_keywords.some(keyword => 
+      orderData.text && orderData.text.toLowerCase().includes(keyword.toLowerCase())
+    );
 
-    // Check op aanwezige artikelcodes
-    if (rule.trigger_codes) {
-      const codeMatch = inputItems.some(item => rule.trigger_codes.includes(item.code));
-      if (codeMatch) isTriggered = true;
-    }
+    if (hasTriggerCode || hasKeyword) {
+      ruleSet.dependent_items.forEach(dep => {
+        // Voorkom dubbele toevoeging als de nevenpost al op de opdracht staat
+        if (!processedMainCodes.has(dep.code)) {
+          let calculatedQty = dep.default_qty || 1;
 
-    // Check op trefwoorden in de tekst
-    if (!isTriggered && rule.trigger_keywords) {
-      const keywordMatch = rule.trigger_keywords.some(kw => inputText.includes(kw.toLowerCase()));
-      if (keywordMatch) isTriggered = true;
-    }
+          if (dep.quantity_rule === 'MATCH_MAIN_QTY') {
+            calculatedQty = orderData.items[0] ? orderData.items[0].quantity : 1;
+          }
 
-    // Als de regel triggert, genereer de afhankelijke nevenposten
-    if (isTriggered && !triggeredRules.has(rule.rule_id)) {
-      triggeredRules.add(rule.rule_id);
+          const totalPrice = calculatedQty * dep.unit_price;
 
-      rule.dependent_items.forEach(dep => {
-        // Controleer of de nevenpost niet al handmatig op de bon staat
-        const alreadyPresent = inputItems.some(item => item.code === dep.code);
-        if (alreadyPresent) return;
-
-        let calculatedQty = 0;
-
-        // Bepaal aantal op basis van de rekenregel
-        if (dep.quantity_rule === 'MATCH_MAIN_QTY') {
-          const mainItem = inputItems.find(item => rule.trigger_codes.includes(item.code)) || inputItems[0];
-          calculatedQty = mainItem ? mainItem.quantity : 1;
-        } else if (dep.quantity_rule === 'CUSTOM_PARAM_OR_ESTIMATE') {
-          const mainItem = inputItems.find(item => rule.trigger_codes.includes(item.code)) || inputItems[0];
-          calculatedQty = mainItem ? Math.round(mainItem.quantity * (dep.default_ratio || 1)) : 1;
-        } else if (dep.quantity_rule === 'FIXED_DEFAULT') {
-          calculatedQty = dep.default_qty || 1;
-        } else if (dep.quantity_rule === 'MATCH_ITEM_QTY') {
-          const target = generatedItems.find(gi => gi.code === dep.match_target_code);
-          calculatedQty = target ? target.quantity : (dep.default_qty || 1);
+          // Voeg toe aan de lijst van gegenereerde nevenposten (uniek op code)
+          if (!triggeredItemsMap.has(dep.code)) {
+            triggeredItemsMap.set(dep.code, {
+              code: dep.code,
+              description: dep.description,
+              quantity: calculatedQty,
+              unitPrice: dep.unit_price,
+              totalPrice: totalPrice,
+              ruleId: ruleSet.rule_id
+            });
+          }
         }
-
-        const totalItemPrice = calculatedQty * dep.unit_price;
-        extraAmount += totalItemPrice;
-
-        generatedItems.push({
-          code: dep.code,
-          description: dep.description,
-          quantity: calculatedQty,
-          unitPrice: dep.unit_price,
-          totalPrice: totalItemPrice,
-          sourceRule: rule.name
-        });
       });
     }
   });
 
+  const generatedItems = Array.from(triggeredItemsMap.values());
+  const extraAmount = generatedItems.reduce((sum, item) => sum + item.totalPrice, 0);
+  const newTotalAmount = originalAmount + extraAmount;
+
   return {
-    orderId: order.id || 'DEMO-001',
-    originalAmount: originalAmount,
-    extraAmount: extraAmount,
-    newTotalAmount: originalAmount + extraAmount,
-    generatedItems: generatedItems
+    orderId: orderData.id,
+    originalAmount,
+    extraAmount,
+    newTotalAmount,
+    mainItems: orderData.items,
+    generatedItems
   };
 }
 
-// ---------------------------------------------------------
-// DEMO TESTRUN (Alleen als je "node ruleEngine.js" rechtstreeks draait)
-// ---------------------------------------------------------
-if (require.main === module) {
-  const testOrder = {
-    id: 'MUT-2026-8812',
-    text: 'Herstel en stucwerk wanden sausklaar in woonkamer 50m2',
-    items: [
-      { code: 'MO-2001', description: 'Stucwerk wanden sausklaar', quantity: 50, unitPrice: 22.50 }
-    ]
-  };
-
-  console.log('=== TESTRUN RULE ENGINE ===\n');
-  const result = processOrder(testOrder);
-
-  console.log(`Opdracht ID         : ${result.orderId}`);
-  console.log(`Oorspronkelijk Bedrag: € ${result.originalAmount.toFixed(2)}`);
-  console.log(`Gegenereerd Extra   : € ${result.extraAmount.toFixed(2)}`);
-  console.log(`Nieuwe Opdrachtsom  : € ${result.newTotalAmount.toFixed(2)}\n`);
-
-  console.log('=== GEGENEREERDE NEVENPOSTEN ===');
-  result.generatedItems.forEach((item, index) => {
-    console.log(`${index + 1}. [${item.code}] ${item.description}`);
-    console.log(`   Aantal: ${item.quantity} | Prijs p/st: € ${item.unitPrice.toFixed(2)} | Totaal: € ${item.totalPrice.toFixed(2)}`);
-  });
-}
-
-// 3. Exporteer de functie voor import in processPdf.js
 module.exports = { processOrder };
