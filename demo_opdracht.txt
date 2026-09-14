@@ -1,0 +1,6 @@
+Opdrachtgever: Woningstichting De Sleutel
+Ordertype: MO (Mutatie Onderhoud)
+Locatie: Hoofdstraat 12, Apeldoorn
+Vermelde regels op inkomende opdracht:
+- MO-3002: Binnendeur vervangen incl. schilderwerk deur
+- MO-3003: Schilderwerk en herstel deurkozijn

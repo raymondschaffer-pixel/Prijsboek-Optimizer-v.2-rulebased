@@ -1,38 +1,35 @@
 // File: processPdf.js
 const fs = require('fs');
 const path = require('path');
-const pdf = require('pdf-parse');
 const { processOrder } = require('./ruleEngine.js');
 
-async function analyzePdfOrder(pdfPath) {
+function analyzeOrder(filePath) {
   try {
-    const absolutePath = path.resolve(pdfPath);
+    const absolutePath = path.resolve(filePath);
     if (!fs.existsSync(absolutePath)) {
-      console.error(`\nFout: PDF-bestand niet gevonden op: ${absolutePath}`);
-      console.log('Zorg dat er een test-PDF in de map staat of geef de juiste bestandsnaam mee.\n');
+      console.error(`\nFout: Bestand niet gevonden: ${absolutePath}\n`);
       return;
     }
 
-    const dataBuffer = fs.readFileSync(absolutePath);
-    const pdfData = await pdf(dataBuffer);
-    const rawText = pdfData.text;
+    // Lees het bestand direct in als tekst (omdat ze in GitHub zijn getypt)
+    const rawText = fs.readFileSync(absolutePath, 'utf-8');
 
-    // Detecteer artikelcodes (zoals MO-2001, DO-1002, SB-3001) via Regex
+    // Detecteer artikelcodes in de tekst via Regex (bijv. MO-3002)
     const codeMatches = rawText.match(/[A-Z]{2}-\d{4}/g) || [];
     const detectedCodes = [...new Set(codeMatches)];
 
     const orderData = {
-      id: path.basename(pdfPath, '.pdf'),
+      id: path.basename(filePath, '.pdf'),
       text: rawText,
       items: detectedCodes.map(code => ({
         code: code,
-        quantity: 1,
-        unitPrice: 0
+        quantity: 1, 
+        unitPrice: 0 
       }))
     };
 
-    console.log(`\n=== VERWERKING PDF: ${path.basename(pdfPath)} ===`);
-    console.log(`Gedetecteerde codes in PDF: ${detectedCodes.join(', ') || 'Geen expliciete codes gevonden (match op tekst)'}\n`);
+    console.log(`\n=== VERWERKING OPDRACHT: ${path.basename(filePath)} ===`);
+    console.log(`Gedetecteerde codes in tekst: ${detectedCodes.join(', ') || 'Geen expliciete codes gevonden.'}\n`);
 
     const result = processOrder(orderData);
 
@@ -43,7 +40,7 @@ async function analyzePdfOrder(pdfPath) {
 
     console.log('=== GEGENEREERDE NEVENPOSTEN ===');
     if (result.generatedItems.length === 0) {
-      console.log('Geen ontbrekende nevenposten gedetecteerd.');
+      console.log('Geen ontbrekende nevenposten gedetecteerd door de Rule Engine.');
     } else {
       result.generatedItems.forEach((item, index) => {
         console.log(`${index + 1}. [${item.code}] ${item.description}`);
@@ -52,9 +49,9 @@ async function analyzePdfOrder(pdfPath) {
     }
 
   } catch (error) {
-    console.error('Fout bij het verwerken van de PDF:', error.message);
+    console.error('\nFout bij het verwerken:', error.message);
   }
 }
 
-const inputPdf = process.argv[2] || 'sample.pdf';
-analyzePdfOrder(inputPdf);
+const inputFile = process.argv[2] || 'werkopdracht 1.pdf';
+analyzeOrder(inputFile);

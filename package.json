@@ -1,5 +1,7 @@
 {
   "name": "prijsboek-optimizer",
   "version": "1.0.0",
-  "dependencies": {}
+  "dependencies": {
+    "pdf-parse": "^2.4.5"
+  }
 }

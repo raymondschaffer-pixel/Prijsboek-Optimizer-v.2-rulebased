@@ -36,14 +36,35 @@
       ]
     },
     {
+      "rule_id": "RULE_DEUR_VERVANGEN",
+      "name": "Vervangen Binnendeur (NPO)",
+      "trigger_codes": ["MO-3002"],
+      "trigger_keywords": ["binnendeur vervangen", "deur vervangen"],
+      "dependent_items": [
+        {
+          "code": "DO-2005",
+          "description": "Afvoeren oude binnendeur en restafval",
+          "quantity_rule": "FIXED_DEFAULT",
+          "default_qty": 1,
+          "unit_price": 25.00
+        },
+        {
+          "code": "DO-2006",
+          "description": "Stel- en paswerkzaamheden extra kozijn/deur",
+          "quantity_rule": "MATCH_MAIN_QTY",
+          "unit_price": 45.00
+        }
+      ]
+    },
+    {
       "rule_id": "RULE_SCHILDER_KOZIJN",
-      "name": "Binnenschilderwerk Kozijnen",
-      "trigger_codes": ["MO-2008"],
-      "trigger_keywords": ["schilderwerk", "kozijn", "kozijnen"],
+      "name": "Binnenschilderwerk Kozijnen / Deuren",
+      "trigger_codes": ["MO-3003"],
+      "trigger_keywords": ["schilderwerk", "kozijn", "deurkozijn"],
       "dependent_items": [
         {
           "code": "MO-2009",
-          "description": "Demonteren/monteren raambeslag t.b.v. schilderwerk",
+          "description": "Demonteren/monteren raambeslag en hang-sluitwerk t.b.v. schilderwerk",
           "quantity_rule": "FIXED_DEFAULT",
           "default_qty": 2,
           "unit_price": 12.00
@@ -51,24 +72,46 @@
       ]
     },
     {
-      "rule_id": "RULE_SLOOP_BADKAMER",
-      "name": "Slopen Tegelwerk Badkamer/Toilet",
-      "trigger_codes": ["MO-2006"],
-      "trigger_keywords": ["slopen tegelwerk", "sloopwerk badkamer", "sloop tegel"],
+      "rule_id": "RULE_BADKAMER_RENOVATIE",
+      "name": "Badkamerrenovatie Klein",
+      "trigger_codes": ["MO-4001"],
+      "trigger_keywords": ["badkamerrenovatie", "badkamer klein"],
       "dependent_items": [
         {
           "code": "MO-2007",
-          "description": "Afvoeren bouwafval mutatie",
+          "description": "Afvoeren bouwafval mutatie badkamer",
           "quantity_rule": "FIXED_DEFAULT",
           "default_qty": 2,
           "unit_price": 120.00
         },
         {
           "code": "DO-1006",
-          "description": "Afkitten sanitair",
+          "description": "Afkitten sanitair en wandhoeken",
           "quantity_rule": "FIXED_DEFAULT",
           "default_qty": 10,
           "unit_price": 11.00
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE_KEUKEN_RENOVATIE",
+      "name": "Keuken Renovatie Basis",
+      "trigger_codes": ["MO-4005"],
+      "trigger_keywords": ["keuken renovatie", "keuken basis"],
+      "dependent_items": [
+        {
+          "code": "DO-3010",
+          "description": "Afkitten aanrechtblad en achterwand",
+          "quantity_rule": "FIXED_DEFAULT",
+          "default_qty": 1,
+          "unit_price": 35.00
+        },
+        {
+          "code": "DO-3011",
+          "description": "Tijdelijke aansluiting spoelbak / koud- en warmwater",
+          "quantity_rule": "FIXED_DEFAULT",
+          "default_qty": 1,
+          "unit_price": 55.00
         }
       ]
     }
