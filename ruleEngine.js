@@ -9,8 +9,14 @@ if (fs.existsSync(parametersPath)) {
   parametersData = JSON.parse(fs.readFileSync(parametersPath, 'utf-8'));
 }
 
+<<<<<<< HEAD
 // Standaard basisprijzen voor hoofdregels ter demonstratie
 function getStandardPrice(code) {
+=======
+// Simpele helper om een fictief prijzenboek te simuleren of in te lezen
+function getStandardPrice(code) {
+  // Standaard basisprijzen voor hoofdregels ter demonstratie
+>>>>>>> 9f8f8dae6713901ca95172c1ee9793b2b3ca315b
   const priceBook = {
     "MO-2001": 180.00,
     "MO-3002": 150.00,
@@ -19,7 +25,11 @@ function getStandardPrice(code) {
     "MO-4001": 450.00,
     "MO-4005": 650.00
   };
+<<<<<<< HEAD
   return priceBook[code] || 50.00; // Fallback prijs als code niet gevonden wordt
+=======
+  return priceBook[code] || 50.00; // Fallback prijs als code niet direct gevonden wordt
+>>>>>>> 9f8f8dae6713901ca95172c1ee9793b2b3ca315b
 }
 
 function processOrder(orderData) {
@@ -38,13 +48,24 @@ function processOrder(orderData) {
 
   // Stap 2: Controleer welke regels triggeren op ontbrekende nevenposten
   parametersData.rule_sets.forEach(ruleSet => {
+<<<<<<< HEAD
     const hasTriggerCode = ruleSet.trigger_codes.some(code => processedMainCodes.has(code));
+=======
+    // Check of een van de trigger codes aanwezig is in de opdracht
+    const hasTriggerCode = ruleSet.trigger_codes.some(code => processedMainCodes.has(code));
+    
+    // Check optioneel op trefwoorden in de ruwe tekst
+>>>>>>> 9f8f8dae6713901ca95172c1ee9793b2b3ca315b
     const hasKeyword = ruleSet.trigger_keywords && ruleSet.trigger_keywords.some(keyword => 
       orderData.text && orderData.text.toLowerCase().includes(keyword.toLowerCase())
     );
 
     if (hasTriggerCode || hasKeyword) {
       ruleSet.dependent_items.forEach(dep => {
+<<<<<<< HEAD
+=======
+        // Voorkom dubbele toevoeging als de nevenpost al op de opdracht staat
+>>>>>>> 9f8f8dae6713901ca95172c1ee9793b2b3ca315b
         if (!processedMainCodes.has(dep.code)) {
           let calculatedQty = dep.default_qty || 1;
 
@@ -54,6 +75,10 @@ function processOrder(orderData) {
 
           const totalPrice = calculatedQty * dep.unit_price;
 
+<<<<<<< HEAD
+=======
+          // Voeg toe aan de lijst van gegenereerde nevenposten (uniek op code)
+>>>>>>> 9f8f8dae6713901ca95172c1ee9793b2b3ca315b
           if (!triggeredItemsMap.has(dep.code)) {
             triggeredItemsMap.set(dep.code, {
               code: dep.code,
@@ -83,4 +108,8 @@ function processOrder(orderData) {
   };
 }
 
+<<<<<<< HEAD
 module.exports = { processOrder };
+=======
+module.exports = { processOrder };
+>>>>>>> 9f8f8dae6713901ca95172c1ee9793b2b3ca315b
