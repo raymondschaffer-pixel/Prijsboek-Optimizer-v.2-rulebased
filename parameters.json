@@ -1,0 +1,76 @@
+{
+  "rule_sets": [
+    {
+      "rule_id": "RULE_STUC_WANDEN",
+      "name": "Stucwerk Wanden Sausklaar",
+      "trigger_codes": ["MO-2001"],
+      "trigger_keywords": ["stucwerk", "sausklaar", "pleisterwerk"],
+      "dependent_items": [
+        {
+          "code": "MO-2003",
+          "description": "Afdekken en tapen vloer",
+          "quantity_rule": "CUSTOM_PARAM_OR_ESTIMATE",
+          "default_ratio": 0.4,
+          "unit_price": 3.50
+        },
+        {
+          "code": "DO-1002",
+          "description": "Verwijderen pluggen/spijkers incl dichtzetten",
+          "quantity_rule": "MATCH_MAIN_QTY",
+          "unit_price": 12.50
+        },
+        {
+          "code": "DO-1003",
+          "description": "Demonteren schakelmateriaal/wandcontactdoos",
+          "quantity_rule": "FIXED_DEFAULT",
+          "default_qty": 4,
+          "unit_price": 7.50
+        },
+        {
+          "code": "DO-1004",
+          "description": "Afmonteren schakelmateriaal/wandcontactdoos",
+          "quantity_rule": "MATCH_ITEM_QTY",
+          "match_target_code": "DO-1003",
+          "unit_price": 9.00
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE_SCHILDER_KOZIJN",
+      "name": "Binnenschilderwerk Kozijnen",
+      "trigger_codes": ["MO-2008"],
+      "trigger_keywords": ["schilderwerk", "kozijn", "kozijnen"],
+      "dependent_items": [
+        {
+          "code": "MO-2009",
+          "description": "Demonteren/monteren raambeslag t.b.v. schilderwerk",
+          "quantity_rule": "FIXED_DEFAULT",
+          "default_qty": 2,
+          "unit_price": 12.00
+        }
+      ]
+    },
+    {
+      "rule_id": "RULE_SLOOP_BADKAMER",
+      "name": "Slopen Tegelwerk Badkamer/Toilet",
+      "trigger_codes": ["MO-2006"],
+      "trigger_keywords": ["slopen tegelwerk", "sloopwerk badkamer", "sloop tegel"],
+      "dependent_items": [
+        {
+          "code": "MO-2007",
+          "description": "Afvoeren bouwafval mutatie",
+          "quantity_rule": "FIXED_DEFAULT",
+          "default_qty": 2,
+          "unit_price": 120.00
+        },
+        {
+          "code": "DO-1006",
+          "description": "Afkitten sanitair",
+          "quantity_rule": "FIXED_DEFAULT",
+          "default_qty": 10,
+          "unit_price": 11.00
+        }
+      ]
+    }
+  ]
+}
