@@ -3,25 +3,24 @@ const fs = require('fs');
 const path = require('path');
 const { processOrder } = require('./ruleEngine');
 
-// Directory waar de testbestanden staan
 const targetDir = __dirname;
 
 function runBatchProcessing() {
   console.log("=== STARTING BATCH PROCESSING ===");
   
-  // Zoek alle .txt bestanden (of simuleer meerdere bestanden)
   const files = fs.readdirSync(targetDir).filter(file => file.endsWith('.txt'));
 
   let totalOriginalSum = 0;
   let totalExtraSum = 0;
   let totalNewSum = 0;
   let processedCount = 0;
+  
+  const alleResultaten = [];
 
   files.forEach(file => {
     const filePath = path.join(targetDir, file);
     const content = fs.readFileSync(filePath, 'utf-8');
 
-    // Simpele extractie van codes uit het tekstbestand
     const foundCodes = [];
     const matches = content.match(/MO-\d{4}|DO-\d{4}/g);
     if (matches) {
@@ -32,7 +31,6 @@ function runBatchProcessing() {
       });
     }
 
-    // Bouw order-object op voor de Rule Engine
     const orderData = {
       id: file,
       text: content,
@@ -45,19 +43,35 @@ function runBatchProcessing() {
     totalOriginalSum += result.originalAmount;
     totalExtraSum += result.extraAmount;
     totalNewSum += result.newTotalAmount;
+    
+    alleResultaten.push({
+        bestandsnaam: file,
+        gedetecteerdeCodes: foundCodes,
+        origineelBedrag: result.originalAmount.toFixed(2),
+        gegenereerdExtra: result.extraAmount.toFixed(2),
+        nieuweOpdrachtsom: result.newTotalAmount.toFixed(2),
+        // Geef nu ook de volledige hoofdregels mee (inclusief omschrijving en prijs)
+        hoofdregels: result.mainItems || [],
+        nevenposten: result.generatedItems || [] 
+    });
 
     console.log(`\n[Bestand: ${file}]`);
     console.log(`- Gedetecteerde codes: ${foundCodes.join(', ') || 'Geen'}`);
     console.log(`- Origineel: € ${result.originalAmount.toFixed(2)} | Extra Marge: € ${result.extraAmount.toFixed(2)} | Totaal: € ${result.newTotalAmount.toFixed(2)}`);
   });
 
-  console.log("\n========================================");
-  console.log(` TOTAAL OVERZICHT (${processedCount} bestanden verwerkt)`);
-  console.log("========================================");
-  console.log(`Totaal Oorspronkelijk Bedrag : € ${totalOriginalSum.toFixed(2)}`);
-  console.log(`Totaal Gemiste Marge (Extra): € ${totalExtraSum.toFixed(2)}`);
-  console.log(`Nieuwe Totale Omzet         : € ${totalNewSum.toFixed(2)}`);
-  console.log("========================================");
+  const dashboardData = {
+      samenvatting: {
+          aantalBestanden: processedCount,
+          totaleKosten: totalOriginalSum.toFixed(2),
+          totaleMarge: totalExtraSum.toFixed(2),
+          totaleOmzet: totalNewSum.toFixed(2)
+      },
+      opdrachten: alleResultaten
+  };
+  
+  fs.writeFileSync(path.join(targetDir, 'results.json'), JSON.stringify(dashboardData, null, 2));
+  console.log("✅ Data succesvol opgeslagen in 'results.json' met uitgebreide hoofdregels!");
 }
 
 runBatchProcessing();
