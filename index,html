@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prijsboek & Workflow Optimizer</title>
+  <!-- Tailwind CSS voor een strakke, professionele VvE/Bouw stijl -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-slate-900 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold tracking-wide">Prijsboek & Workflow Optimizer</h1>
+      <div class="flex items-center gap-3">
+        <span id="authBadge" class="bg-amber-500 text-slate-950 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Demo Modus</span>
+        <button id="toggleAuthBtn" onclick="toggleManagementRights()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 rounded transition">
+          Rechten In-/Uitschakelen
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+
+    <!-- INVOER KANALEN: Upload & E-mail Simulatie -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Handmatige Upload / Bestand Kiezen -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="text-lg font-semibold text-slate-900 mb-3">Bestand / Werkorder Upload</h2>
+        <p class="text-sm text-slate-500 mb-4">Upload een inkomende werkorder (TXT/PDF simulatie) of kies een voorbeeld.</p>
+        <input type="file" id="fileInput" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mb-4 cursor-pointer">
+        <button onclick="processUploadedFile()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+          Analyseer Werkorder
+        </button>
+      </div>
+
+      <!-- E-mail / Tekst Invoer Simulatie -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="text-lg font-semibold text-slate-900 mb-3">E-mail / Tekst Invoer Simulatie</h2>
+        <p class="text-sm text-slate-500 mb-4">Plak hier de binnenkomende e-mail of opdrachttekst van de opdrachtgever.</p>
+        <textarea id="emailInputText" rows="3" placeholder="Plak hier bijvoorbeeld: - MO-3002: Vervangen binnendeur..." class="w-full text-sm p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none mb-3"></textarea>
+        <button onclick="processEmailText()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2 px-4 rounded-lg transition">
+          Verwerk Directe Invoer
+        </button>
+      </div>
+
+    </section>
+
+    <!-- HET BEVEILIGDE ANALYSE VENSTER / SCHERM (Zichtbaar bij rechten) -->
+    <section id="managementAnalytics" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hidden transition-all duration-300">
+      <div class="flex justify-between items-center mb-6 border-b pb-4">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Management & Rendementsanalyse</h2>
+          <p class="text-sm text-slate-500">Cumulatief overzicht van verwerkte opdrachten en gerecupereerde marge.</p>
+        </div>
+        <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full">Rechten Actief</span>
+      </div>
+
+      <!-- KPI Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+          <span class="block text-xs font-medium text-slate-500 uppercase">Totaal Opdrachten</span>
+          <span id="kpiCount" class="text-2xl font-bold text-slate-900">0</span>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+          <span class="block text-xs font-medium text-slate-500 uppercase">Originele Opbrengst</span>
+          <span id="kpiOriginal" class="text-2xl font-bold text-slate-900">€ 0,00</span>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+          <span class="block text-xs font-medium text-slate-500 uppercase">Extra Nevenposten</span>
+          <span id="kpiExtra" class="text-2xl font-bold text-blue-600">€ 0,00</span>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+          <span class="block text-xs font-medium text-slate-500 uppercase">Nieuwe Totale Som</span>
+          <span id="kpiNewTotal" class="text-2xl font-bold text-slate-900">€ 0,00</span>
+        </div>
+        <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+          <span class="block text-xs font-medium text-emerald-700 uppercase">Rendementswinst</span>
+          <span id="kpiPercentage" class="text-2xl font-bold text-emerald-600">0.0%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTATEN & CONTROLE VOOR OPDRACHTGEVER -->
+    <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+        <h2 class="text-lg font-semibold text-slate-900">Resultaat & Gecorrigeerde Opdracht ter Inzage</h2>
+        <button onclick="generateClientPreview()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium py-2 px-4 rounded-lg shadow-sm transition flex items-center gap-2">
+          <span>Genereer Controle-overzicht voor Opdrachtgever</span>
+        </button>
+      </div>
+
+      <div id="outputContainer" class="bg-slate-900 text-slate-100 p-5 rounded-lg font-mono text-sm overflow-x-auto min-h-[200px]">
+        <span class="text-slate-500">// Nog geen opdracht geanalyseerd. Upload een bestand of voer tekst in...</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Simpele client-side simulatie logica gekoppeld aan de engine data -->
+  <script>
+    let hasRights = false;
+    let analyticsData = {
+      count: 0,
+      originalSum: 0,
+      extraSum: 0,
+      newTotalSum: 0
+    };
+
+    let lastResult = null;
+
+    function toggleManagementRights() {
+      hasRights = !hasRights;
+      const panel = document.getElementById('managementAnalytics');
+      const badge = document.getElementById('authBadge');
+      
+      if (hasRights) {
+        panel.classList.remove('hidden');
+        badge.textContent = "Management Toegang";
+        badge.className = "bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider";
+      } else {
+        panel.classList.add('hidden');
+        badge.textContent = "Demo Modus";
+        badge.className = "bg-amber-500 text-slate-950 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider";
+      }
+    }
+
+    // Simulatie van ruleEngine logica in de browser voor directe visuele feedback
+    const standardPrices = {
+      "MO-2001": 180.00, "MO-3002": 150.00, "MO-3003": 95.00,
+      "MO-3004": 40.00, "MO-4001": 450.00, "MO-4005": 650.00
+    };
+
+    const rulesData = [
+      { trigger: "MO-3002", deps: [{ code: "DO-2005", desc: "Afvoeren oude binnendeur en restafval", price: 25.00 }, { code: "DO-2006", desc: "Stel- en paswerkzaamheden extra kozijn/deur", price: 45.00 }] },
+      { trigger: "MO-2001", deps: [{ code: "DO-1001", desc: "Afplakken en afdekken vloeren/meubilair", price: 35.00 }, { code: "DO-1002", desc: "Voorstrijk / primer aanbrengen", price: 20.00 }] },
+      { trigger: "MO-4005", deps: [{ code: "DO-3010", desc: "Afkitten aanrechtblad en achterwand", price: 45.00 }, { code: "DO-2007", desc: "Afvoeren oude keukenblok", price: 75.00 }] }
+    ];
+
+    function evaluateText(text, idName) {
+      let originalAmount = 0;
+      let detectedCodes = [];
+      
+      const matches = text.match(/MO-\d{4}|DO-\d{4}/g) || [];
+      matches.forEach(c => { if(!detectedCodes.includes(c)) detectedCodes.push(c); });
+
+      detectedCodes.forEach(code => {
+        originalAmount += standardPrices[code] || 50.00;
+      });
+
+      let generatedItems = [];
+      detectedCodes.forEach(code => {
+        rulesData.forEach(r => {
+          if (r.trigger === code) {
+            r.deps.forEach(dep => {
+              if (!detectedCodes.includes(dep.code)) {
+                // check of al in generated
+                if (!generatedItems.some(i => i.code === dep.code)) {
+                  generatedItems.push({ code: dep.code, description: dep.desc, unitPrice: dep.price, totalPrice: dep.price, quantity: 1 });
+                }
+              }
+            });
+          }
+        });
+      });
+
+      let extraAmount = generatedItems.reduce((sum, item) => sum + item.totalPrice, 0);
+      let newTotalAmount = originalAmount + extraAmount;
+
+      lastResult = {
+        id: idName,
+        originalAmount,
+        extraAmount,
+        newTotalAmount,
+        detectedCodes,
+        generatedItems
+      };
+
+      // Update analytics
+      analyticsData.count += 1;
+      analyticsData.originalSum += originalAmount;
+      analyticsData.extraSum += extraAmount;
+      analyticsData.newTotalSum += newTotalAmount;
+      updateAnalyticsUI();
+
+      renderOutput(lastResult);
+    }
+
+    function updateAnalyticsUI() {
+      document.getElementById('kpiCount').textContent = analyticsData.count;
+      document.getElementById('kpiOriginal').textContent = `€ ${analyticsData.originalSum.toFixed(2)}`;
+      document.getElementById('kpiExtra').textContent = `€ ${analyticsData.extraSum.toFixed(2)}`;
+      document.getElementById('kpiNewTotal').textContent = `€ ${analyticsData.newTotalSum.toFixed(2)}`;
+      
+      let percentage = analyticsData.originalSum > 0 ? ((analyticsData.extraSum / analyticsData.originalSum) * 100).toFixed(1) : 0;
+      document.getElementById('kpiPercentage').textContent = `+${percentage}%`;
+    }
+
+    function renderOutput(res) {
+      let html = `=== VERWERKING OPDRACHT: ${res.id} ===\n`;
+      html += `Gedetecteerde codes: ${res.detectedCodes.join(', ') || 'Geen'}\n\n`;
+      html += `Oorspronkelijk Bedrag : € ${res.originalAmount.toFixed(2)}\n`;
+      html += `Gegenereerd Extra   : € ${res.extraAmount.toFixed(2)}\n`;
+      html += `Nieuwe Opdrachtsom  : € ${res.newTotalAmount.toFixed(2)}\n\n`;
+      
+      if (res.generatedItems.length > 0) {
+        html += `=== GEGENEREERDE NEVENPOSTEN ===\n`;
+        res.generatedItems.forEach((item, idx) => {
+          html += `${idx + 1}. [${item.code}] ${item.description}\n`;
+          html += `   Aantal: ${item.quantity} | Prijs p/st: € ${item.unitPrice.toFixed(2)} | Totaal: € ${item.totalPrice.toFixed(2)}\n`;
+        });
+      } else {
+        html += `=== GEEN EXTRA NEVENPOSTEN NODIG (Compleet) ===\n`;
+      }
+
+      document.getElementById('outputContainer').textContent = html;
+    }
+
+    function processUploadedFile() {
+      const fileInput = document.getElementById('fileInput');
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          evaluateText(e.target.result, file.name);
+        };
+        reader.readAsText(file);
+      } else {
+        // Simulatie als er geen bestand is gekozen
+        evaluateText("Opdrachtgever: Demo Woningstichting\n- MO-3002: Vervangen binnendeur\n- MO-2001: Stucwerk", "upload_simulatie.txt");
+      }
+    }
+
+    function processEmailText() {
+      const text = document.getElementById('emailInputText').value;
+      if (!text.trim()) {
+        alert("Vul alstublieft wat e-mailtekst of codes in.");
+        return;
+      }
+      evaluateText(text, "e-mail_opdracht.txt");
+      document.getElementById('emailInputText').value = '';
+    }
+
+    function generateClientPreview() {
+      if (!lastResult) {
+        alert("Voer eerst een analyse uit voordat je een controle-overzicht genereert.");
+        return;
+      }
+      alert(`[CLIENT PREVIEW GEGENEREERD]\n\nEr is een formele specificatie gemaakt voor de opdrachtgever met een gecorrigeerd totaal van € ${lastResult.newTotalAmount.toFixed(2)}, inclusief de onderbouwing van de ontbrekende nevenposten.`);
+    }
+  </script>
+
+</body>
+</html>

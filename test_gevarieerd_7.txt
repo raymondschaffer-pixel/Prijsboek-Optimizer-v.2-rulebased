@@ -1,0 +1,5 @@
+Opdrachtgever: De Goede Woning
+Ordertype: Groot Onderhoud
+Locatie: Molenstraat 102, Apeldoorn
+Regels:
+- MO-2001: Stucwerk wanden sausklaar gehele woning

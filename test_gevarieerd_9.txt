@@ -1,0 +1,7 @@
+Opdrachtgever: Woningstichting Viveste
+Ordertype: Mutatie Onderhoud
+Locatie: Jachtlaan 12, Apeldoorn
+Regels:
+- MO-4001: Badkamerrenovatie klein complete eenheid
+- MO-2007: Afvoeren bouwafval mutatie badkamer
+- DO-1006: Afkitten sanitair en wandhoeken

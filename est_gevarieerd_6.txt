@@ -1,0 +1,6 @@
+Opdrachtgever: Woningstichting Open Doors
+Ordertype: Mutatie Onderhoud
+Locatie: Beethovenstraat 14, Apeldoorn
+Regels:
+- MO-4005: Keuken Renovatie Basis
+- DO-3010: Afkitten aanrechtblad en achterwand
