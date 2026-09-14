@@ -91,26 +91,31 @@ function processOrder(order) {
 }
 
 // ---------------------------------------------------------
-// DEMO TESTRUN (Wordt uitgevoerd bij: node ruleEngine.js)
+// DEMO TESTRUN (Alleen als je "node ruleEngine.js" rechtstreeks draait)
 // ---------------------------------------------------------
-const testOrder = {
-  id: 'MUT-2026-8812',
-  text: 'Herstel en stucwerk wanden sausklaar in woonkamer 50m2',
-  items: [
-    { code: 'MO-2001', description: 'Stucwerk wanden sausklaar', quantity: 50, unitPrice: 22.50 }
-  ]
-};
+if (require.main === module) {
+  const testOrder = {
+    id: 'MUT-2026-8812',
+    text: 'Herstel en stucwerk wanden sausklaar in woonkamer 50m2',
+    items: [
+      { code: 'MO-2001', description: 'Stucwerk wanden sausklaar', quantity: 50, unitPrice: 22.50 }
+    ]
+  };
 
-console.log('=== TESTRUN RULE ENGINE ===\n');
-const result = processOrder(testOrder);
+  console.log('=== TESTRUN RULE ENGINE ===\n');
+  const result = processOrder(testOrder);
 
-console.log(`Opdracht ID         : ${result.orderId}`);
-console.log(`Oorspronkelijk Bedrag: € ${result.originalAmount.toFixed(2)}`);
-console.log(`Gegenereerd Extra   : € ${result.extraAmount.toFixed(2)}`);
-console.log(`Nieuwe Opdrachtsom  : € ${result.newTotalAmount.toFixed(2)}\n`);
+  console.log(`Opdracht ID         : ${result.orderId}`);
+  console.log(`Oorspronkelijk Bedrag: € ${result.originalAmount.toFixed(2)}`);
+  console.log(`Gegenereerd Extra   : € ${result.extraAmount.toFixed(2)}`);
+  console.log(`Nieuwe Opdrachtsom  : € ${result.newTotalAmount.toFixed(2)}\n`);
 
-console.log('=== GEGENEREERDE NEVENPOSTEN ===');
-result.generatedItems.forEach((item, index) => {
-  console.log(`${index + 1}. [${item.code}] ${item.description}`);
-  console.log(`   Aantal: ${item.quantity} | Prijs p/st: € ${item.unitPrice.toFixed(2)} | Totaal: € ${item.totalPrice.toFixed(2)}`);
-});
+  console.log('=== GEGENEREERDE NEVENPOSTEN ===');
+  result.generatedItems.forEach((item, index) => {
+    console.log(`${index + 1}. [${item.code}] ${item.description}`);
+    console.log(`   Aantal: ${item.quantity} | Prijs p/st: € ${item.unitPrice.toFixed(2)} | Totaal: € ${item.totalPrice.toFixed(2)}`);
+  });
+}
+
+// 3. Exporteer de functie voor import in processPdf.js
+module.exports = { processOrder };
