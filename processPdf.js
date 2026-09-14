@@ -2,49 +2,40 @@
 const fs = require('fs');
 const path = require('path');
 const pdf = require('pdf-parse');
-
-// Importeer de rekenlogica (zorg dat ruleEngine.js zijn processOrder functie exporteert)
 const { processOrder } = require('./ruleEngine.js');
 
 async function analyzePdfOrder(pdfPath) {
   try {
-    // 1. Lees het PDF bestand in als buffer
     const absolutePath = path.resolve(pdfPath);
     if (!fs.existsSync(absolutePath)) {
-      console.error(`Fout: Bestand niet gevonden op pad: ${absolutePath}`);
+      console.error(`\nFout: PDF-bestand niet gevonden op: ${absolutePath}`);
+      console.log('Zorg dat er een test-PDF in de map staat of geef de juiste bestandsnaam mee.\n');
       return;
     }
 
     const dataBuffer = fs.readFileSync(absolutePath);
-    
-    // 2. Parse de PDF tekst
     const pdfData = await pdf(dataBuffer);
     const rawText = pdfData.text;
 
-    // 3. Extraheer artikelcodes (zoals MO-2001, DO-1002, SB-3001) via Regex
+    // Detecteer artikelcodes (zoals MO-2001, DO-1002, SB-3001) via Regex
     const codeMatches = rawText.match(/[A-Z]{2}-\d{4}/g) || [];
-    
-    // Unieke gevonden codes filteren
     const detectedCodes = [...new Set(codeMatches)];
 
-    // Omzetten naar invoerobject voor de Rule Engine
     const orderData = {
       id: path.basename(pdfPath, '.pdf'),
       text: rawText,
       items: detectedCodes.map(code => ({
         code: code,
-        quantity: 1, // Standaardwaarde indien niet expliciet gespecificeerd
-        unitPrice: 0  // Wordt indien gewenst uit parameters.json gehaald
+        quantity: 1,
+        unitPrice: 0
       }))
     };
 
-    // 4. Verwerk door de Rule Engine
     console.log(`\n=== VERWERKING PDF: ${path.basename(pdfPath)} ===`);
     console.log(`Gedetecteerde codes in PDF: ${detectedCodes.join(', ') || 'Geen expliciete codes gevonden (match op tekst)'}\n`);
 
     const result = processOrder(orderData);
 
-    // 5. Resultaat tonen
     console.log(`Opdracht ID         : ${result.orderId}`);
     console.log(`Oorspronkelijk Bedrag: € ${result.originalAmount.toFixed(2)}`);
     console.log(`Gegenereerd Extra   : € ${result.extraAmount.toFixed(2)}`);
@@ -65,6 +56,5 @@ async function analyzePdfOrder(pdfPath) {
   }
 }
 
-// Pak het PDF-bestand dat als argument wordt meegegeven via de terminal
-const inputPdf = process.argv[2] || 'concept_opdracht.pdf';
+const inputPdf = process.argv[2] || 'sample.pdf';
 analyzePdfOrder(inputPdf);
