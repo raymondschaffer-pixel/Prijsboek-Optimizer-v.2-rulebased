@@ -1,0 +1,11 @@
+Werknummer,Ordertype,Basisopdracht,Aanvullende_taakregels
+RS.1.0001,MO,MO-2001: Woonkamer wanden stucen ca 40m2,MO-1001: Afplakken ruimte, MO-1002: Verwijderen plinten (20 m1) en MO-1003: Verwijderen haken en pluggen
+RS.1.0002,MO,MO-3002: Binnendeur vervangen incl. schilderwerk,DO-1010: Demontage en afvoer oude binnendeur en MO-3004: Overzetten hang- en sluitwerk
+RS.1.0003,MO,MO-4001: Badkamerrenovatie klein (< 3m2),MO-4004: Toilet renovatie basisuitrusting
+RS.1.0004,DO,MO-3001: Binnendeur vervangen (excl. schilderwerk),DO-1010: Demontage en afvoer oude binnendeur
+RS.1.0005,SB,MO-4005: Keuken renovatie basis incl. 6m2 tegelwerk,MO-1002: Verwijderen plinten (35 m1)
+RS.1.0006,DO,MO-4004: Toilet renovatie basisuitrusting,DO-1006: Afkiten sanitair
+RS.1.0007,MO,MO-4005: Keuken renovatie basis incl. 6m2 tegelwerk,MO-2003: Afdekken en tapen vloer
+RS.1.0008,SB,MO-4002: Badkamerrenovatie middel (< 4m2),MO-2004: Verwijderen vloerplinten
+RS.1.0009,DO,MO-2001: Schilderwerk wanden dekkend,DO-1002: Verwijderen pluggen/spijkers incl dichtzetten
+RS.1.0010,MO,MO-4003: Badkamerrenovatie groot (> 5m2),MO-2009: Demontage en monteren raambeslag

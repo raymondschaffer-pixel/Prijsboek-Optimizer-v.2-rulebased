@@ -1,0 +1,39 @@
+code,categorie,omschrijving,eenheid,prijs_excl
+DO-1001,DO,Herstel wandstucwerk klein (<1m2),stuk,65.00
+DO-1002,DO,Verwijderen pluggen/spijkers incl dichtzetten,m2,12.50
+DO-1003,DO,Demonteren schakelmateriaal/wandcontactdoos,stuk,7.50
+DO-1004,DO,Afmonteren schakelmateriaal/wandcontactdoos,stuk,9.00
+DO-1005,DO,Vervangen kraanleertje/binnenwerk,stuk,25.00
+DO-1006,DO,Afkitten sanitair,m1,11.00
+DO-1007,DO,Vervangen toiletpot staand incl zitting,stuk,185.00
+DO-1008,DO,Vervangen valpijp en manchet,stuk,22.00
+DO-1009,DO,Vervangen hoekstopkraan,stuk,35.00
+MO-2001,MO,Stucwerk wanden sausklaar,m2,22.50
+MO-2002,MO,Sauswerk wanden dekkend (na stucwerk),m2,14.50
+MO-2003,MO,Afdekken en tapen vloer,m2,3.50
+MO-2004,MO,Verwijderen vloerplinten hout/mdf,m1,2.50
+MO-2005,MO,Aanbrengen nieuwe vloerplinten,m1,8.50
+MO-2006,MO,Slopen tegelwerk badkamer/toilet,m2,28.00
+MO-2007,MO,Afvoeren bouwafval mutatie,m3,120.00
+MO-2008,MO,Schilderwerk kozijnen binnen,m2,42.00
+MO-2009,MO,Demonteren/monteren raambeslag t.b.v. schilderwerk,stuk,12.00
+MO-2010,MO,Houtrotreparatie klein (tot 100cc),stuk,65.00
+SB-3001,SB,Plaatsen voorzetwand geïsoleerd,m2,85.00
+SB-3002,SB,Aanleggen extra leidinggroep,m1,28.00
+SB-3003,SB,Vervangen groepenkast 8-groepen,stuk,850.00
+SB-3004,SB,Freeswerk leidingen steen/beton,m1,18.00
+SB-3005,SB,Aarden installatie / metingen verrichten,uur,75.00
+MO-3001,MO,Binnendeur vervangen (excl. schilderwerk),stuk,95.50
+MO-3002,MO,Binnendeur vervangen incl. schilderwerk deur,stuk,145.00
+MO-3003,MO,Schilderwerk en herstel deurkozijn,stuk,75.00
+MO-3004,MO,Overzetten bestaand hang- en sluitwerk,stuk,35.00
+DO-1010,DO,Demontage en afvoer oude binnendeur,stuk,45.00
+MO-4001,MO,Badkamerrenovatie klein (< 3m2),forfaitair,3450.00
+MO-4002,MO,Badkamerrenovatie middel (< 4m2),forfaitair,4850.00
+MO-4003,MO,Badkamerrenovatie groot (> 5m2),forfaitair,6950.00
+MO-4004,MO,Toilet renovatie basisuitrusting,forfaitair,1450.00
+MO-4005,MO,Keuken renovatie basis incl. 6m2 tegelwerk,forfaitair,2850.00
+MO-1001,MO,Afplakken ruimte en folie aanbrengen,forfaitair,35.00
+MO-1002,MO,Verwijderen plinten,m1,2.50
+MO-1003,MO,Verwijderen haken, schroeven en pluggen,forfaitair,22.50
+MO-2001,MO,Woonkamer wanden stucen ca 40m2,forfaitair,650.00
