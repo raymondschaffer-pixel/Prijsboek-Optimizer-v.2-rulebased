@@ -12,7 +12,7 @@
     <header class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shadow-md">
         <h1 class="text-xl font-bold tracking-wide">Prijsboek & Workflow Optimizer</h1>
         <div class="flex items-center gap-3">
-            <span class="bg-amber-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full">DEMO MODUS</span>
+            <span class="bg-emerald-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full">MANAGEMENT TOEGANG</span>
             <button class="bg-slate-800 hover:bg-slate-700 text-xs border border-slate-600 px-3 py-1 rounded transition-colors">Rechten In-/Uitschakelen</button>
         </div>
     </header>
@@ -27,70 +27,230 @@
                 <h2 class="text-lg font-bold text-slate-800 mb-1">Bestand / Werkorder Upload</h2>
                 <p class="text-sm text-slate-500 mb-4">Upload een inkomende werkorder (TXT/PDF simulatie) of kies een voorbeeld.</p>
                 <div class="flex items-center gap-3 mb-4">
-                    <input type="file" id="file-input" class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
+                    <input type="file" class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
                 </div>
-                <button onclick="analyseerUpload()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors">Analyseer Werkorder</button>
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors">Analyseer Werkorder</button>
             </div>
 
             <!-- Text Input Box -->
             <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
                 <h2 class="text-lg font-bold text-slate-800 mb-1">E-mail / Tekst Invoer Simulatie</h2>
                 <p class="text-sm text-slate-500 mb-4">Plak hier de binnenkomende e-mail of opdrachttekst van de opdrachtgever.</p>
-                <textarea id="text-input" class="w-full border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none mb-4" rows="3" placeholder="Plak hier bijvoorbeeld: - MO-3002: Vervangen binnendeur..."></textarea>
-                <button onclick="analyseerTekst()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2 rounded-lg transition-colors">Verwerk Directe Invoer</button>
+                <textarea class="w-full border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none mb-4" rows="3" placeholder="Plak hier bijvoorbeeld: - MO-3002: Vervangen binnendeur..."></textarea>
+                <button class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2 rounded-lg transition-colors">Verwerk Directe Invoer</button>
             </div>
 
+        </div>
+
+        <!-- Management KPI Row -->
+        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">Management & Rendementsanalyse</h2>
+                    <p class="text-sm text-slate-500">Cumulatief overzicht van verwerkte opdrachten en gerecupereerde marge.</p>
+                </div>
+                <span class="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">Rechten Actief</span>
+            </div>
+
+            <!-- KPIs -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 pt-4 border-t border-slate-100">
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <span class="text-xs font-semibold text-slate-500 block mb-1">TOTAAL OPDRACHTEN</span>
+                    <span id="kpi-totaal" class="text-2xl font-bold text-slate-800">0</span>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <span class="text-xs font-semibold text-slate-500 block mb-1">ORIGINELE OPBRENGST</span>
+                    <span id="kpi-origineel" class="text-2xl font-bold text-slate-800">€ 0,00</span>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <span class="text-xs font-semibold text-blue-600 block mb-1">EXTRA NEVENPOSTEN</span>
+                    <span id="kpi-extra" class="text-2xl font-bold text-blue-600">€ 0,00</span>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <span class="text-xs font-semibold text-slate-500 block mb-1">NIEUWE TOTALE SOM</span>
+                    <span id="kpi-nieuw" class="text-2xl font-bold text-slate-800">€ 0,00</span>
+                </div>
+                <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                    <span class="text-xs font-semibold text-emerald-600 block mb-1">RENDEMENTSWINST</span>
+                    <span id="kpi-winst" class="text-2xl font-bold text-emerald-600">0.0%</span>
+                </div>
+            </div>
         </div>
 
         <!-- Result Console -->
         <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold text-slate-800">Resultaat & Gecorrigeerde Opdracht ter Inzage</h2>
-                <button class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">Genereer Controle-overzicht voor Opdrachtgever</button>
+                <h2 class="text-lg font-bold text-slate-800">Resultaat & Gecorrigeerde Opdrachten ter Inzage</h2>
+                <button class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i> Exporteer Rapportage
+                </button>
             </div>
-            <div id="result-console" class="bg-slate-900 rounded-lg p-4 font-mono text-sm text-slate-300 min-h-[180px] space-y-2">
-                <span class="text-slate-500">// Nog geen opdracht geanalyseerd. Upload een bestand of voer tekst in...</span>
+            
+            <!-- Hierin worden de individuele opdrachten geladen -->
+            <div id="batch-results-container" class="space-y-4">
+                <div class="bg-slate-900 rounded-lg p-4 font-mono text-sm text-slate-300 min-h-[150px] flex items-center justify-center">
+                    Laden van batch resultaten...
+                </div>
             </div>
         </div>
 
     </main>
 
     <script>
-        lucide.createIcons();
-
-        // Simuleer een individuele analyse op basis van tekstinvoer
-        function analyseerTekst() {
-            const invoer = document.getElementById('text-input').value.trim();
-            const consoleDiv = document.getElementById('result-console');
+        // Functie om een specifieke order in te klappen / uit te klappen
+        function toggleOrder(index) {
+            const detailsElement = document.getElementById(`details-${index}`);
+            const iconElement = document.getElementById(`icon-${index}`);
             
-            if (!invoer) {
-                consoleDiv.innerHTML = `<span class="text-red-400">⚠️ Voer alstublieft eerst een opdrachttekst in.</span>`;
-                return;
+            if (detailsElement.classList.contains('hidden')) {
+                detailsElement.classList.remove('hidden');
+                iconElement.style.transform = 'rotate(180deg)';
+            } else {
+                detailsElement.classList.add('hidden');
+                iconElement.style.transform = 'rotate(0deg)';
             }
-
-            consoleDiv.innerHTML = `
-                <div class="text-emerald-400 font-bold">✔ Opdracht succesvol geanalyseerd op basis van regels:</div>
-                <div class="text-slate-300 mt-2">Invoer: "${invoer}"</div>
-                <div class="border-t border-slate-700 my-2 pt-2 text-slate-400">
-                    <div>• Gedetecteerde hoofdcode: <span class="text-white font-semibold">MO-3002</span> (€ 150,00)</div>
-                    <div>• Automatisch toegevoegde nevenpost: <span class="text-emerald-400 font-semibold">MO-2007 (Afvoeren bouwafval)</span> (+ € 70,00)</div>
-                </div>
-                <div class="text-emerald-300 font-bold mt-2">Nieuwe Totaalsom: € 220,00 (Marge geoptimaliseerd)</div>
-            `;
         }
 
-        function analyseerUpload() {
-            const consoleDiv = document.getElementById('result-console');
-            consoleDiv.innerHTML = `
-                <div class="text-emerald-400 font-bold">✔ Voorbeeldbestand succesvol ingelezen!</div>
-                <div class="border-t border-slate-700 my-2 pt-2 text-slate-400">
-                    <div>• Bestand: <span class="text-white">test_gevarieerd_1.txt</span></div>
-                    <div>• Origineel bedrag: <span class="text-white">€ 180,00</span></div>
-                    <div>• Toegevoegde nevenposten: <span class="text-emerald-400">MO-2007 (+ € 70,00)</span></div>
-                </div>
-                <div class="text-emerald-300 font-bold mt-2">Nieuwe Totaalsom: € 250,00</div>
-            `;
-        }
+        // Data ophalen en dashboard vullen zodra de pagina laadt
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('results.json')
+                .then(response => response.json())
+                .then(data => {
+                    // --- 1. VUL DE KPI BLOKKEN ---
+                    const origineel = parseFloat(data.samenvatting.totaleKosten);
+                    const extra = parseFloat(data.samenvatting.totaleMarge);
+                    const nieuw = parseFloat(data.samenvatting.totaleOmzet);
+                    const winstPerc = origineel > 0 ? ((extra / origineel) * 100).toFixed(1) : 0;
+                    const formatEuro = (bedrag) => '€ ' + bedrag.toLocaleString('nl-NL', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+                    document.getElementById('kpi-totaal').innerText = data.samenvatting.aantalBestanden;
+                    document.getElementById('kpi-origineel').innerText = formatEuro(origineel);
+                    document.getElementById('kpi-extra').innerText = '+ ' + formatEuro(extra);
+                    document.getElementById('kpi-nieuw').innerText = formatEuro(nieuw);
+                    document.getElementById('kpi-winst').innerText = '+' + winstPerc + '%';
+
+                    // --- 2. VUL DE LIJST MET UITKLAPBARE KAARTJES ---
+                    const container = document.getElementById('batch-results-container');
+                    container.innerHTML = ''; 
+
+                    // Helper dictionary voor beschrijvingen van hoofdregels
+                    const omschrijvingenLijst = {
+                        "MO-2001": "Montage kozijn en glas",
+                        "MO-3002": "Vervangen binnendeur inclusief beslag",
+                        "MO-3003": "Herstel hang- en sluitwerk",
+                        "MO-3004": "Vervangen ventilatierooster",
+                        "MO-4001": "Groot onderhoud keukenblok",
+                        "MO-4005": "Vervangen tegelwerk badkamer",
+                        "DO-1006": "Periodieke inspectie en kleine nastelwerkzaamheden"
+                    };
+
+                    data.opdrachten.forEach((opdracht, index) => {
+                        
+                        // Bouw HTML voor de gedetecteerde hoofdregels
+                        let hoofdregelsHTML = '';
+                        if (opdracht.hoofdregels && opdracht.hoofdregels.length > 0) {
+                            opdracht.hoofdregels.forEach(hr => {
+                                const omschrijving = omschrijvingenLijst[hr.code] || "Standaard onderhoudswerkzaamheid";
+                                hoofdregelsHTML += `
+                                <div class="flex justify-between items-center bg-white border border-slate-200 p-2.5 rounded text-xs mb-2">
+                                    <div>
+                                        <span class="bg-slate-800 text-white font-bold px-1.5 py-0.5 rounded text-[10px] mr-2">${hr.code}</span>
+                                        <span class="font-medium text-slate-800">${omschrijving}</span>
+                                        <span class="text-slate-500 ml-2">(Aantal: ${hr.quantity || 1})</span>
+                                    </div>
+                                    <span class="font-semibold text-slate-800">€ ${hr.totalPrice.toFixed(2)}</span>
+                                </div>`;
+                            });
+                        } else {
+                            hoofdregelsHTML = `<p class="text-xs text-slate-400 italic">Geen hoofdregels gevonden.</p>`;
+                        }
+
+                        // Bouw HTML voor de gegenereerde nevenposten (met markering)
+                        let nevenpostenHTML = '';
+                        if (opdracht.nevenposten && opdracht.nevenposten.length > 0) {
+                            opdracht.nevenposten.forEach(np => {
+                                nevenpostenHTML += `
+                                <div class="flex justify-between items-center bg-emerald-50 border border-emerald-300 p-2.5 rounded text-xs mb-2 shadow-sm">
+                                    <div>
+                                        <span class="bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded text-[10px] mr-2">${np.code}</span>
+                                        <span class="font-semibold text-slate-900">${np.description}</span>
+                                        <span class="text-slate-500 ml-2">(Aantal: ${np.quantity})</span>
+                                    </div>
+                                    <span class="font-bold text-emerald-700">+ € ${np.totalPrice.toFixed(2)}</span>
+                                </div>`;
+                            });
+                        } else {
+                            nevenpostenHTML = `<p class="text-xs text-slate-400 italic">Geen automatische nevenposten gegenereerd voor dit bestand.</p>`;
+                        }
+
+                        const kaartje = `
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg overflow-hidden transition-all">
+                            <!-- Hoofdrij (Klikbaar om uit te klappen) -->
+                            <div onclick="toggleOrder(${index})" class="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center cursor-pointer hover:bg-slate-100 transition-colors gap-2">
+                                <div class="flex items-center gap-2">
+                                    <i id="icon-${index}" data-lucide="chevron-down" class="w-4 h-4 text-slate-500 transition-transform duration-200"></i>
+                                    <h3 class="font-bold text-slate-700 flex items-center gap-2">
+                                        <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i> 
+                                        ${opdracht.bestandsnaam}
+                                    </h3>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm w-full sm:w-auto justify-between sm:justify-end">
+                                    <span class="text-xs bg-slate-200 px-2 py-1 rounded text-slate-600 font-mono">
+                                        Codes: ${opdracht.gedetecteerdeCodes.join(', ') || 'Geen'}
+                                    </span>
+                                    <span class="font-bold text-emerald-600">+ € ${opdracht.gegenereerdExtra}</span>
+                                </div>
+                            </div>
+
+                            <!-- Uitklapbaar Gedetailleerd Deelte -->
+                            <div id="details-${index}" class="hidden border-t border-slate-200 bg-white p-4 space-y-4 text-sm">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div class="bg-slate-50 p-2.5 rounded border border-slate-100">
+                                        <span class="text-slate-500 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Origineel Bedrag</span>
+                                        <span class="font-semibold text-slate-800">€ ${opdracht.origineelBedrag}</span>
+                                    </div>
+                                    <div class="bg-blue-50 p-2.5 rounded border border-blue-100">
+                                        <span class="text-blue-600 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Extra Marge</span>
+                                        <span class="font-bold text-blue-600">+ € ${opdracht.gegenereerdExtra}</span>
+                                    </div>
+                                    <div class="bg-slate-900 p-2.5 rounded border border-slate-700 text-white">
+                                        <span class="text-slate-300 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Nieuwe Totale Som</span>
+                                        <span class="font-bold text-emerald-400">€ ${opdracht.nieuweOpdrachtsom}</span>
+                                    </div>
+                                </div>
+
+                                <!-- SECTIE 1: Aangeleverde Basis / Hoofdregels -->
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">1. Aangeleverde Hoofdregels (Originele Order)</h4>
+                                    <div class="space-y-1">
+                                        ${hoofdregelsHTML}
+                                    </div>
+                                </div>
+
+                                <!-- SECTIE 2: Toegevoegde Automatische Nevenposten (Gemarkeerd) -->
+                                <div>
+                                    <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2">2. Toegevoegde Aanvullende Taakregels (Automatische Marge-optimalisatie)</h4>
+                                    <div class="space-y-1">
+                                        ${nevenpostenHTML}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                        
+                        container.innerHTML += kaartje;
+                    });
+
+                    lucide.createIcons();
+                })
+                .catch(error => {
+                    console.log('Geen batch resultaten gevonden.', error);
+                    document.getElementById('batch-results-container').innerHTML = `
+                        <div class="bg-red-50 text-red-600 p-4 rounded-lg text-sm border border-red-200">
+                            Kon de batch-resultaten niet inladen. Controleer of 'results.json' bestaat (draai 'node runBatch.js').
+                        </div>`;
+                    lucide.createIcons();
+                });
+        });
     </script>
 </body>
 </html>
