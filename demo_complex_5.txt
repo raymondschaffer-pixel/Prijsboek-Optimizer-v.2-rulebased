@@ -1,0 +1,7 @@
+Opdrachtgever: De Goede Woning
+Ordertype: Dagelijks Onderhoud & Herstel
+Locatie: Schooldwarsstraat 7, Apeldoorn
+Specificatie:
+- MO-2001: Stucwerk wanden sausklaar hal
+- MO-3003: Binnenschilderwerk Kozijnen / Deuren voordeurkozijn
+Let op: Bewoner heeft aangegeven dat hang- en sluitwerk al gedemonteerd is.

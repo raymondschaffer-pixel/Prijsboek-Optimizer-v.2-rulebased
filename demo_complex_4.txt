@@ -1,0 +1,7 @@
+Opdrachtgever: Woningstichting Viveste
+Ordertype: MO / Mutatie Onderhoud complex
+Locatie: Parklaan 12, Apeldoorn
+Omschrijving werkzaamheden:
+- MO-4005: Keuken Renovatie Basis blok type A
+- MO-3002: Vervangen Binnendeur (slaapkamer 1)
+- MO-3002: Vervangen Binnendeur (slaapkamer 2)

@@ -1,405 +1,245 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <title>Prijzenboek Analyse & Scope Controle</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <title>Prijsboek & Workflow Optimizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-100 font-sans min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 font-sans pb-10">
 
-  <header class="bg-slate-900 text-white shadow-md px-6 py-4 flex justify-between items-center">
-    <div class="flex items-center space-x-3">
-      <span class="bg-blue-600 text-xs font-mono px-2.5 py-1 rounded uppercase tracking-wider">Interne Controle</span>
-      <h1 class="text-xl font-bold tracking-tight">Prijzenboek Analyse & Scope Controle</h1>
-    </div>
-    <div class="flex items-center gap-3">
-      <span id="auto-load-status" class="text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/30">🔄 Laden...</span>
-      <button onclick="exporteerAnalyses()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded transition shadow">
-        📊 Exporteer Rapport (CSV)
-      </button>
-    </div>
-  </header>
-
-  <main class="flex-1 max-w-7xl w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-    
-    <section class="lg:col-span-1 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden">
-      <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-        <h2 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Inkomende Werkbonnen</h2>
-        <span id="queue-count" class="bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-0.5 rounded-full">0</span>
-      </div>
-      
-      <div id="queue-container" class="p-4 space-y-3 flex-1 overflow-y-auto max-h-[calc(100vh-16rem)]">
-        <p class="text-slate-400 text-xs italic text-center py-8">Inlezen werkbonnen...</p>
-      </div>
-
-      <div class="p-3 bg-slate-50 border-t border-slate-200 text-center">
-        <button onclick="initialiseerApp()" class="text-xs text-blue-600 font-semibold hover:underline">
-          🔄 Ververs Data & Queue
-        </button>
-      </div>
-    </section>
-
-    <section class="lg:col-span-2 space-y-6">
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <div class="flex justify-between items-center mb-4 border-b pb-3">
-          <h2 class="font-bold text-slate-800 text-base">Analyse Workbench</h2>
-          <span id="active-work-id" class="text-xs font-mono bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded">Geen selectie</span>
+    <!-- Header -->
+    <header class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shadow-md">
+        <h1 class="text-xl font-bold tracking-wide">Prijsboek & Workflow Optimizer</h1>
+        <div class="flex items-center gap-3">
+            <span class="bg-emerald-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full">MANAGEMENT TOEGANG</span>
+            <button class="bg-slate-800 hover:bg-slate-700 text-xs border border-slate-600 px-3 py-1 rounded transition-colors">Rechten In-/Uitschakelen</button>
         </div>
+    </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Ordertype</label>
-            <select id="categorie" class="w-full border border-slate-300 p-2 rounded text-sm bg-slate-50">
-              <option value="DO">DO - Dagelijks Onderhoud</option>
-              <option value="MO">MO - Mutatie Onderhoud</option>
-              <option value="SB">SB - Servicebouw</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Werknummer / Referentie</label>
-            <input type="text" id="input-werknummer" class="w-full border border-slate-300 p-2 rounded text-sm bg-slate-50 font-mono" placeholder="RS.1.0001">
-          </div>
-        </div>
+    <main class="max-w-6xl mx-auto mt-8 space-y-6 px-4">
 
-        <div class="mb-4">
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Aangeleverde Basisopdracht</label>
-          <textarea id="opdracht" class="w-full border border-slate-300 p-2 rounded text-sm h-20 bg-slate-50" placeholder="Basisopdracht..."></textarea>
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Aanvullende taakregels / Specificatie</label>
-          <textarea id="notities" class="w-full border border-slate-300 p-2 rounded text-sm h-20 bg-slate-50" placeholder="Aanvullende taakregels..."></textarea>
-        </div>
-
-        <button onclick="analyseerActieveBon()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded text-sm transition shadow-sm">
-          Start Analyse & Waardebepaling
-        </button>
-      </div>
-
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
-        <div>
-          <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider mb-3">Financiële Waardebepaling</h3>
-          
-          <div id="loading" class="hidden text-blue-600 font-bold animate-pulse py-6 text-center text-sm">Bezig met berekenen...</div>
-          
-          <div id="resultaat" class="hidden space-y-4">
-            <p id="beoordeling" class="text-xs text-slate-600 italic bg-slate-50 p-3 rounded border border-slate-200"></p>
+        <!-- Top Row: Upload & Text Input -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            <div class="grid grid-cols-3 gap-3 text-center">
-              <div class="bg-blue-50 border border-blue-200 p-2 rounded">
-                <span class="block text-[10px] uppercase font-bold text-blue-800">Basisopdracht</span>
-                <span class="text-sm font-bold text-blue-900">€ <span id="val-basis">0.00</span></span>
-              </div>
-              <div class="bg-amber-50 border border-amber-200 p-2 rounded">
-                <span class="block text-[10px] uppercase font-bold text-amber-800">Aanvullende Regels</span>
-                <span class="text-sm font-bold text-amber-900">€ <span id="val-aanvullend">0.00</span></span>
-              </div>
-              <div class="bg-emerald-50 border border-emerald-200 p-2 rounded">
-                <span class="block text-[10px] uppercase font-bold text-emerald-800">Totale Opdrachtsom</span>
-                <span class="text-sm font-bold text-emerald-900">€ <span id="val-totaal">0.00</span></span>
-              </div>
+            <!-- Upload Box -->
+            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-800 mb-1">Bestand / Werkorder Upload</h2>
+                <p class="text-sm text-slate-500 mb-4">Upload een inkomende werkorder (TXT/PDF simulatie) of kies een voorbeeld.</p>
+                <div class="flex items-center gap-3 mb-4">
+                    <input type="file" class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
+                </div>
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors">Analyseer Werkorder</button>
             </div>
 
-            <div class="overflow-x-auto mt-3">
-              <table class="w-full text-left border border-slate-200 text-xs">
-                <thead>
-                  <tr class="bg-slate-100 text-slate-700">
-                    <th class="p-2 border">Code</th>
-                    <th class="p-2 border">Aanvullende Taakregel / Afwijking</th>
-                    <th class="p-2 border text-right">Waarde</th>
-                  </tr>
-                </thead>
-                <tbody id="gemiste-regels"></tbody>
-              </table>
+            <!-- Text Input Box -->
+            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-800 mb-1">E-mail / Tekst Invoer Simulatie</h2>
+                <p class="text-sm text-slate-500 mb-4">Plak hier de binnenkomende e-mail of opdrachttekst van de opdrachtgever.</p>
+                <textarea class="w-full border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none mb-4" rows="3" placeholder="Plak hier bijvoorbeeld: - MO-3002: Vervangen binnendeur..."></textarea>
+                <button class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2 rounded-lg transition-colors">Verwerk Directe Invoer</button>
             </div>
-          </div>
-          
-          <div id="placeholder-tekst" class="text-slate-400 text-center py-8 text-xs italic">
-            Selecteer een werkbon en start de analyse.
-          </div>
+
         </div>
-      </div>
-    </section>
-  </main>
 
-  <section class="max-w-7xl w-full mx-auto px-6 mb-12">
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-      <div class="flex justify-between items-center mb-4 border-b pb-3">
-        <h2 class="font-bold text-slate-800 text-base">📈 Management Overzicht (Alle Geanalyseerde Bonnen)</h2>
-        <span class="text-xs text-slate-500 font-semibold" id="aantal-geanalyseerd">Geanalyseerd: 0 bonnen</span>
-      </div>
+        <!-- Management KPI Row -->
+        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">Management & Rendementsanalyse</h2>
+                    <p class="text-sm text-slate-500">Cumulatief overzicht van verwerkte opdrachten en gerecupereerde marge.</p>
+                </div>
+                <span class="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">Rechten Actief</span>
+            </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-slate-50 border p-4 rounded text-center">
-          <span class="block text-xs font-semibold text-slate-500 uppercase">Totale Basis Som</span>
-          <span class="text-xl font-bold text-slate-900">€ <span id="cumulatief-opdrachtsom">0.00</span></span>
+            <!-- KPIs -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 pt-4 border-t border-slate-100">
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <span class="text-xs font-semibold text-slate-500 block mb-1">TOTAAL OPDRACHTEN</span>
+                    <span id="kpi-totaal" class="text-2xl font-bold text-slate-800">0</span>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <span class="text-xs font-semibold text-slate-500 block mb-1">ORIGINELE OPBRENGST</span>
+                    <span id="kpi-origineel" class="text-2xl font-bold text-slate-800">€ 0,00</span>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <span class="text-xs font-semibold text-blue-600 block mb-1">EXTRA NEVENPOSTEN</span>
+                    <span id="kpi-extra" class="text-2xl font-bold text-blue-600">€ 0,00</span>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <span class="text-xs font-semibold text-slate-500 block mb-1">NIEUWE TOTALE SOM</span>
+                    <span id="kpi-nieuw" class="text-2xl font-bold text-slate-800">€ 0,00</span>
+                </div>
+                <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                    <span class="text-xs font-semibold text-emerald-600 block mb-1">RENDEMENTSWINST</span>
+                    <span id="kpi-winst" class="text-2xl font-bold text-emerald-600">0.0%</span>
+                </div>
+            </div>
         </div>
-        <div class="bg-amber-50 border border-amber-200 p-4 rounded text-center">
-          <span class="block text-xs font-semibold text-amber-700 uppercase">Totaal Aanvullende Regels</span>
-          <span class="text-xl font-bold text-amber-900">€ <span id="cumulatief-gemist">0.00</span></span>
+
+        <!-- Result Console -->
+        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-slate-800">Resultaat & Gecorrigeerde Opdrachten ter Inzage</h2>
+                <button class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i> Exporteer Rapportage
+                </button>
+            </div>
+            
+            <div id="batch-results-container" class="space-y-4">
+                <div class="bg-slate-900 rounded-lg p-4 font-mono text-sm text-slate-300 min-h-[150px] flex items-center justify-center">
+                    Laden van batch resultaten...
+                </div>
+            </div>
         </div>
-        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded text-center">
-          <span class="block text-xs font-semibold text-emerald-700 uppercase">Gecorrigeerde Totaal Som</span>
-          <span class="text-xl font-bold text-emerald-900">€ <span id="cumulatief-gecorrigeerd">0.00</span></span>
-        </div>
-        <div class="bg-red-50 border border-red-200 p-4 rounded text-center">
-          <span class="block text-xs font-semibold text-red-700 uppercase">Procentuele Afwijking</span>
-          <span class="text-xl font-bold text-red-900"><span id="foutmarge-perc">0.00</span>%</span>
-        </div>
-      </div>
 
-      <div id="historie-container" class="space-y-2">
-        <p class="text-slate-400 text-xs italic text-center py-4">Nog geen opdrachten doorgerekend in deze sessie.</p>
-      </div>
-    </div>
-  </section>
+    </main>
 
-  <script>
-    const CSV_PRIJZEN_URL = './fictief_prijzenboek.csv';
-    const CSV_WERKOPDRACHTEN_URL = './werkopdrachten_Rayregelthetwel.csv';
-    
-    let cachedPrijzenBoek = "";
-    let ingelezenOpdrachten = [];
-    let uitgevoerdeAnalyses = [];
-
-    window.addEventListener('DOMContentLoaded', () => {
-      initialiseerApp();
-    });
-
-    async function initialiseerApp() {
-      const statusEl = document.getElementById('auto-load-status');
-      statusEl.innerText = '🔄 Bestanden inlezen...';
-      
-      try {
-        const resPrijzen = await fetch(CSV_PRIJZEN_URL);
-        if (!resPrijzen.ok) throw new Error('Kan prijzenboek niet laden.');
-        cachedPrijzenBoek = await resPrijzen.text();
-
-        const resBonnen = await fetch(CSV_WERKOPDRACHTEN_URL);
-        if (!resBonnen.ok) throw new Error('Kan werkopdrachten niet laden.');
-        const csvText = await resBonnen.text();
-        
-        parseEnToonWerkopdrachten(csvText);
-        statusEl.innerText = '✅ Online & Gesynchroniseerd';
-        statusEl.className = 'text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/30';
-      } catch (error) {
-        console.error("Initialisatiefout:", error);
-        statusEl.innerText = '⚠️ Laadfout';
-        statusEl.className = 'text-xs bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full border border-amber-500/30';
-        alert("Kon de CSV-bestanden niet inlezen vanaf de server. Controleer of ze in de hoofdmap staan.");
-      }
-    }
-
-    function parseEnToonWerkopdrachten(csvText) {
-      const lines = csvText.trim().split('\n');
-      ingelezenOpdrachten = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        const parts = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        if (parts.length >= 4) {
-          ingelezenOpdrachten.push({
-            id: parts[0].trim().replace(/"/g, ''),
-            ordertype: parts[1].trim().replace(/"/g, ''),
-            basisopdracht: parts[2].trim().replace(/"/g, ''),
-            taakregels: parts[3].trim().replace(/"/g, '')
-          });
+    <script>
+        function toggleOrder(index) {
+            const detailsElement = document.getElementById(`details-${index}`);
+            const iconElement = document.getElementById(`icon-${index}`);
+            
+            if (detailsElement.classList.contains('hidden')) {
+                detailsElement.classList.remove('hidden');
+                iconElement.style.transform = 'rotate(180deg)';
+            } else {
+                detailsElement.classList.add('hidden');
+                iconElement.style.transform = 'rotate(0deg)';
+            }
         }
-      }
 
-      ingelezenOpdrachten.sort((a, b) => a.id.localeCompare(b.id, 'nl', { numeric: true }));
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('results.json')
+                .then(response => response.json())
+                .then(data => {
+                    const origineel = parseFloat(data.samenvatting.totaleKosten);
+                    const extra = parseFloat(data.samenvatting.totaleMarge);
+                    const nieuw = parseFloat(data.samenvatting.totaleOmzet);
+                    const winstPerc = origineel > 0 ? ((extra / origineel) * 100).toFixed(1) : 0;
+                    const formatEuro = (bedrag) => '€ ' + bedrag.toLocaleString('nl-NL', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
-      const container = document.getElementById('queue-container');
-      document.getElementById('queue-count').innerText = ingelezenOpdrachten.length;
-      
-      if (ingelezenOpdrachten.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 text-xs italic text-center py-4">Geen werkbonnen gevonden.</p>';
-        return;
-      }
+                    document.getElementById('kpi-totaal').innerText = data.samenvatting.aantalBestanden;
+                    document.getElementById('kpi-origineel').innerText = formatEuro(origineel);
+                    document.getElementById('kpi-extra').innerText = '+ ' + formatEuro(extra);
+                    document.getElementById('kpi-nieuw').innerText = formatEuro(nieuw);
+                    document.getElementById('kpi-winst').innerText = '+' + winstPerc + '%';
 
-      container.innerHTML = '';
-      ingelezenOpdrachten.forEach((opdracht, index) => {
-        container.innerHTML += `
-          <div onclick="selecteerWerkbon(${index})" class="p-3 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-blue-400 cursor-pointer transition flex flex-col gap-1.5">
-            <div class="flex justify-between items-center">
-              <span class="font-mono font-bold text-blue-700 text-xs">${opdracht.id}</span>
-              <span class="text-[10px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${opdracht.ordertype}</span>
-            </div>
-            <p class="text-xs text-slate-700 font-medium line-clamp-2">${opdracht.basisopdracht}</p>
-          </div>
-        `;
-      });
-    }
+                    const container = document.getElementById('batch-results-container');
+                    container.innerHTML = ''; 
 
-    function selecteerWerkbon(index) {
-      const item = ingelezenOpdrachten[index];
-      if (!item) return;
+                    // Helper dictionary voor beschrijvingen van hoofdregels als demo
+                    const omschrijvingenLijst = {
+                        "MO-2001": "Montage kozijn en glas",
+                        "MO-3002": "Vervangen binnendeur inclusief beslag",
+                        "MO-3003": "Herstel hang- en sluitwerk",
+                        "MO-3004": "Vervangen ventilatierooster",
+                        "MO-4001": "Groot onderhoud keukenblok",
+                        "MO-4005": "Vervangen tegelwerk badkamer",
+                        "DO-1006": "Periodieke inspectie en kleine nastelwerkzaamheden"
+                    };
 
-      document.getElementById('input-werknummer').value = item.id;
-      document.getElementById('categorie').value = item.ordertype;
-      document.getElementById('opdracht').value = item.basisopdracht;
-      document.getElementById('notities').value = item.taakregels;
-      document.getElementById('active-work-id').innerText = item.id;
-    }
+                    data.opdrachten.forEach((opdracht, index) => {
+                        
+                        let hoofdregelsHTML = '';
+                        if (opdracht.hoofdregels && opdracht.hoofdregels.length > 0) {
+                            opdracht.hoofdregels.forEach(hr => {
+                                const omschrijving = omschrijvingenLijst[hr.code] || "Standaard onderhoudswerkzaamheid";
+                                hoofdregelsHTML += `
+                                <div class="flex justify-between items-center bg-white border border-slate-200 p-2.5 rounded text-xs mb-2">
+                                    <div>
+                                        <span class="bg-slate-800 text-white font-bold px-1.5 py-0.5 rounded text-[10px] mr-2">${hr.code}</span>
+                                        <span class="font-medium text-slate-800">${omschrijving}</span>
+                                        <span class="text-slate-500 ml-2">(Aantal: ${hr.quantity || 1})</span>
+                                    </div>
+                                    <span class="font-semibold text-slate-800">€ ${hr.totalPrice.toFixed(2)}</span>
+                                </div>`;
+                            });
+                        } else {
+                            hoofdregelsHTML = `<p class="text-xs text-slate-400 italic">Geen hoofdregels gevonden.</p>`;
+                        }
 
-    async function analyseerActieveBon() {
-      const werknummer = document.getElementById('input-werknummer').value || 'Onbekend';
-      const opdracht = document.getElementById('opdracht').value;
-      const notities = document.getElementById('notities').value;
-      const categorie = document.getElementById('categorie').value;
+                        let nevenpostenHTML = '';
+                        if (opdracht.nevenposten && opdracht.nevenposten.length > 0) {
+                            opdracht.nevenposten.forEach(np => {
+                                nevenpostenHTML += `
+                                <div class="flex justify-between items-center bg-emerald-50 border border-emerald-300 p-2.5 rounded text-xs mb-2 shadow-sm">
+                                    <div>
+                                        <span class="bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded text-[10px] mr-2">${np.code}</span>
+                                        <span class="font-semibold text-slate-900">${np.description}</span>
+                                        <span class="text-slate-500 ml-2">(Aantal: ${np.quantity})</span>
+                                    </div>
+                                    <span class="font-bold text-emerald-700">+ € ${np.totalPrice.toFixed(2)}</span>
+                                </div>`;
+                            });
+                        } else {
+                            nevenpostenHTML = `<p class="text-xs text-slate-400 italic">Geen automatische nevenposten gegenereerd voor dit bestand.</p>`;
+                        }
 
-      if (!opdracht) {
-        alert("Vul of selecteer eerst een basisopdracht.");
-        return;
-      }
+                        const kaartje = `
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg overflow-hidden transition-all">
+                            <div onclick="toggleOrder(${index})" class="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center cursor-pointer hover:bg-slate-100 transition-colors gap-2">
+                                <div class="flex items-center gap-2">
+                                    <i id="icon-${index}" data-lucide="chevron-down" class="w-4 h-4 text-slate-500 transition-transform duration-200"></i>
+                                    <h3 class="font-bold text-slate-700 flex items-center gap-2">
+                                        <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i> 
+                                        ${opdracht.bestandsnaam}
+                                    </h3>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm w-full sm:w-auto justify-between sm:justify-end">
+                                    <span class="text-xs bg-slate-200 px-2 py-1 rounded text-slate-600 font-mono">
+                                        Codes: ${opdracht.gedetecteerdeCodes.join(', ') || 'Geen'}
+                                    </span>
+                                    <span class="font-bold text-emerald-600">+ € ${opdracht.gegenereerdExtra}</span>
+                                </div>
+                            </div>
 
-      if (!cachedPrijzenBoek) {
-        alert("Prijzenboek is nog niet geladen. Ververs de pagina.");
-        return;
-      }
+                            <div id="details-${index}" class="hidden border-t border-slate-200 bg-white p-4 space-y-4 text-sm">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div class="bg-slate-50 p-2.5 rounded border border-slate-100">
+                                        <span class="text-slate-500 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Origineel Bedrag</span>
+                                        <span class="font-semibold text-slate-800">€ ${opdracht.origineelBedrag}</span>
+                                    </div>
+                                    <div class="bg-blue-50 p-2.5 rounded border border-blue-100">
+                                        <span class="text-blue-600 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Extra Marge</span>
+                                        <span class="font-bold text-blue-600">+ € ${opdracht.gegenereerdExtra}</span>
+                                    </div>
+                                    <div class="bg-slate-900 p-2.5 rounded border border-slate-700 text-white">
+                                        <span class="text-slate-300 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Nieuwe Totale Som</span>
+                                        <span class="font-bold text-emerald-400">€ ${opdracht.nieuweOpdrachtsom}</span>
+                                    </div>
+                                </div>
 
-      document.getElementById('loading').classList.remove('hidden');
-      document.getElementById('resultaat').classList.add('hidden');
-      document.getElementById('placeholder-tekst').classList.add('hidden');
-      document.getElementById('gemiste-regels').innerHTML = '';
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">1. Aangeleverde Hoofdregels (Originele Order)</h4>
+                                    <div class="space-y-1">
+                                        ${hoofdregelsHTML}
+                                    </div>
+                                </div>
 
-      try {
-        const response = await fetch('/.netlify/functions/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            opdracht, 
-            notities, 
-            categorie, 
-            csvData: cachedPrijzenBoek 
-          })
+                                <div>
+                                    <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2">2. Toegevoegde Aanvullende Taakregels (Automatische Marge-optimalisatie)</h4>
+                                    <div class="space-y-1">
+                                        ${nevenpostenHTML}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                        
+                        container.innerHTML += kaartje;
+                    });
+
+                    lucide.createIcons();
+                })
+                .catch(error => {
+                    console.log('Geen batch resultaten gevonden.', error);
+                    document.getElementById('batch-results-container').innerHTML = `
+                        <div class="bg-red-50 text-red-600 p-4 rounded-lg text-sm border border-red-200">
+                            Kon de batch-resultaten niet inladen. Controleer of 'results.json' bestaat (draai 'node runBatch.js').
+                        </div>`;
+                    lucide.createIcons();
+                });
         });
-
-        if (!response.ok) {
-          throw new Error(`Serverfout: HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-        
-        document.getElementById('beoordeling').innerText = data.analyse_beoordeling || "Geen toelichting gegeven.";
-        
-        const valBasis = parseFloat(data.basis_waarde) || 0;
-        const valAanvullend = parseFloat(data.aanvullend_waarde) || 0;
-        const valTotaal = parseFloat(data.totale_opdrachtsom) || (valBasis + valAanvullend);
-
-        document.getElementById('val-basis').innerText = valBasis.toFixed(2);
-        document.getElementById('val-aanvullend').innerText = valAanvullend.toFixed(2);
-        document.getElementById('val-totaal').innerText = valTotaal.toFixed(2);
-        
-        if (data.gemiste_artikelen && data.gemiste_artikelen.length > 0) {
-          data.gemiste_artikelen.forEach(item => {
-            document.getElementById('gemiste-regels').innerHTML += `
-              <tr>
-                <td class="p-2 border font-mono">${item.code}</td>
-                <td class="p-2 border">${item.omschrijving}</td>
-                <td class="p-2 border text-right font-bold text-amber-800">€ ${parseFloat(item.prijs_excl || 0).toFixed(2)}</td>
-              </tr>`;
-          });
-        } else {
-          document.getElementById('gemiste-regels').innerHTML = '<tr><td colspan="3" class="p-2 border text-center text-slate-500">Geen aanvullende taakregels ontbrekend.</td></tr>';
-        }
-
-        document.getElementById('resultaat').classList.remove('hidden');
-
-        const bestaandIndex = uitgevoerdeAnalyses.findIndex(a => a.id === werknummer);
-        const analyseItem = {
-          id: werknummer,
-          ordertype: categorie,
-          opdracht,
-          notities,
-          beoordeling: data.analyse_beoordeling,
-          basisWaarde: valBasis,
-          aanvullendWaarde: valAanvullend,
-          totaalSom: valTotaal,
-          artikelen: data.gemiste_artikelen || []
-        };
-
-        if (bestaandIndex >= 0) {
-          uitgevoerdeAnalyses[bestaandIndex] = analyseItem;
-        } else {
-          uitgevoerdeAnalyses.push(analyseItem);
-        }
-
-        updateManagementOverzicht();
-
-      } catch (error) {
-        alert("Fout opgetreden bij de analyse: " + error.message);
-        console.error(error);
-      } finally {
-        document.getElementById('loading').classList.add('hidden');
-      }
-    }
-
-    function updateManagementOverzicht() {
-      const container = document.getElementById('historie-container');
-      document.getElementById('aantal-geanalyseerd').innerText = `Geanalyseerd: ${uitgevoerdeAnalyses.length} bonnen`;
-      
-      if (uitgevoerdeAnalyses.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 text-xs italic text-center py-4">Nog geen opdrachten doorgerekend.</p>';
-        return;
-      }
-
-      let somBasis = 0;
-      let somGemist = 0;
-      let somTotaal = 0;
-
-      container.innerHTML = '';
-
-      uitgevoerdeAnalyses.forEach(item => {
-        somBasis += item.basisWaarde;
-        somGemist += item.aanvullendWaarde;
-        somTotaal += item.totaalSom;
-
-        container.innerHTML += `
-          <div class="flex justify-between items-center p-3 bg-slate-50 border border-slate-200 rounded text-xs">
-            <div class="flex items-center gap-3">
-              <span class="font-mono font-bold text-blue-700">${item.id}</span>
-              <span class="text-slate-700 truncate max-w-sm">${item.opdracht}</span>
-            </div>
-            <div class="flex items-center gap-6 font-mono">
-              <span>Basis: € ${item.basisWaarde.toFixed(2)}</span>
-              <span class="text-amber-800 font-bold">Aanvullend: € ${item.aanvullendWaarde.toFixed(2)}</span>
-              <span class="text-emerald-800 font-bold">Totaal: € ${item.totaalSom.toFixed(2)}</span>
-            </div>
-          </div>
-        `;
-      });
-
-      document.getElementById('cumulatief-opdrachtsom').innerText = somBasis.toFixed(2);
-      document.getElementById('cumulatief-gemist').innerText = somGemist.toFixed(2);
-      document.getElementById('cumulatief-gecorrigeerd').innerText = somTotaal.toFixed(2);
-
-      const foutmarge = somTotaal > 0 ? (somGemist / somTotaal) * 100 : 0;
-      document.getElementById('foutmarge-perc').innerText = foutmarge.toFixed(2);
-    }
-
-    function exporteerAnalyses() {
-      if (uitgevoerdeAnalyses.length === 0) {
-        alert("Geen data om te exporteren.");
-        return;
-      }
-
-      let csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += "Werknummer,Ordertype,Basisopdracht,Basis_Waarde,Aanvullend_Waarde,Totale_Opdrachtsom,Beoordeling\r\n";
-
-      uitgevoerdeAnalyses.forEach(item => {
-        csvContent += `"${item.id}","${item.ordertype}","${item.opdracht.replace(/\n/g, ' ').replace(/"/g, '""')}","${item.basisWaarde}","${item.aanvullendWaarde}","${item.totaalSom}","${item.beoordeling.replace(/"/g, '""')}"\r\n`;
-      });
-
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "analyse_en_foutmarge_rapport.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  </script>
+    </script>
 </body>
 </html>

@@ -1,0 +1,6 @@
+Opdrachtgever: Woningstichting De Sleutel
+Ordertype: Servicebouw
+Locatie: Kayersdijk 55, Apeldoorn
+Regels:
+- MO-3002: Vervangen Binnendeur (voordeur woonkamer)
+- MO-3002: Vervangen Binnendeur (slaapkamer achterzijde)

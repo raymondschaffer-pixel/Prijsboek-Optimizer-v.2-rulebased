@@ -1,0 +1,5 @@
+Opdrachtgever: Woningstichting De Sleutel
+Ordertype: Dagelijks Onderhoud
+Locatie: Loolaan 3, Apeldoorn
+Regels:
+- MO-3003: Binnenschilderwerk Kozijnen / Deuren

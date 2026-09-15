@@ -1,0 +1,6 @@
+Opdrachtgever: Woningstichting De Sleutel
+Ordertype: MO (Mutatie Onderhoud)
+Locatie: Hoofdstraat 88, Apeldoorn
+Vermelde regels:
+- MO-4001: Badkamerrenovatie klein complete eenheid
+- DO-1006: Afkitten sanitair en wandhoeken (reeds vermeld)

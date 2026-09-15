@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Prijsboek & Workflow Optimizer - Resultaat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans p-6">
+
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <!-- Header -->
+        <div class="bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <span class="text-xs uppercase tracking-wider text-emerald-400 font-semibold">Workflow Optimizer v2.2</span>
+                <h2 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="file-text" class="w-5 h-5 text-emerald-400"></i>
+                    Verwerking Opdracht: demo_complex_4.txt
+                </h2>
+            </div>
+            <button onclick="generateReport()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm transition-all flex items-center gap-2 cursor-pointer">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                Genereer Controle-overzicht voor Opdrachtgever
+            </button>
+        </div>
+
+        <!-- Body Content -->
+        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Left 2 Cols: Summary & Nevenposten -->
+            <div class="md:col-span-2 space-y-6">
+                
+                <!-- Key Metrics Cards -->
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <span class="text-xs text-slate-500 block">Origineel Bedrag</span>
+                        <span class="text-lg font-bold text-slate-700">€ 800,00</span>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-lg">
+                        <span class="text-xs text-emerald-700 font-medium block">Gegenereerd Extra</span>
+                        <span class="text-lg font-bold text-emerald-600">+ € 190,00</span>
+                    </div>
+                    <div class="bg-slate-900 text-white p-3 rounded-lg shadow-sm">
+                        <span class="text-xs text-slate-300 block">Nieuwe Opdrachtsom</span>
+                        <span class="text-lg font-bold text-emerald-400">€ 990,00</span>
+                    </div>
+                </div>
+
+                <!-- Detected Codes & Nevenposten Table -->
+                <div class="border border-slate-200 rounded-lg overflow-hidden">
+                    <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex justify-between items-center">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                            <i data-lucide="layers" class="w-4 h-4 text-emerald-600"></i>
+                            Gedetecteerde Codes & Gegenereerde Nevenposten
+                        </span>
+                        <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full font-mono">MO-4005, MO-3002</span>
+                    </div>
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs">
+                                <th class="py-2.5 px-3 font-semibold">Code</th>
+                                <th class="py-2.5 px-3 font-semibold">Omschrijving</th>
+                                <th class="py-2.5 px-3 font-semibold text-center">Aantal</th>
+                                <th class="py-2.5 px-3 font-semibold text-right">Totaal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-xs">
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="py-2.5 px-3 font-mono font-medium text-emerald-700">DO-3010</td>
+                                <td class="py-2.5 px-3 text-slate-700">Afkitten aanrechtblad en achterwand</td>
+                                <td class="py-2.5 px-3 text-center text-slate-600">1</td>
+                                <td class="py-2.5 px-3 text-right font-medium text-slate-800">€ 45,00</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="py-2.5 px-3 font-mono font-medium text-emerald-700">DO-2007</td>
+                                <td class="py-2.5 px-3 text-slate-700">Afvoeren oude keukenblok</td>
+                                <td class="py-2.5 px-3 text-center text-slate-600">1</td>
+                                <td class="py-2.5 px-3 text-right font-medium text-slate-800">€ 75,00</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="py-2.5 px-3 font-mono font-medium text-emerald-700">DO-2005</td>
+                                <td class="py-2.5 px-3 text-slate-700">Afvoeren oude binnendeur en restafval</td>
+                                <td class="py-2.5 px-3 text-center text-slate-600">1</td>
+                                <td class="py-2.5 px-3 text-right font-medium text-slate-800">€ 25,00</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="py-2.5 px-3 font-mono font-medium text-emerald-700">DO-2006</td>
+                                <td class="py-2.5 px-3 text-slate-700">Stel- en paswerkzaamheden extra kozijn/deur</td>
+                                <td class="py-2.5 px-3 text-center text-slate-600">1</td>
+                                <td class="py-2.5 px-3 text-right font-medium text-slate-800">€ 45,00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- Right Col: Bar Chart Comparison -->
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5 mb-1">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-600"></i>
+                        Financieel Vergelijk
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">Verschil met vs. zonder workflow analyse.</p>
+                </div>
+
+                <!-- SVG Bar Chart -->
+                <div class="my-auto">
+                    <svg viewBox="0 0 240 180" class="w-full h-auto">
+                        <!-- Grid lines -->
+                        <line x1="40" y1="20" x2="220" y2="20" stroke="#e2e8f0" stroke-dasharray="3,3" />
+                        <line x1="40" y1="65" x2="220" y2="65" stroke="#e2e8f0" stroke-dasharray="3,3" />
+                        <line x1="40" y1="110" x2="220" y2="110" stroke="#e2e8f0" stroke-dasharray="3,3" />
+                        <line x1="40" y1="155" x2="220" y2="155" stroke="#cbd5e1" />
+
+                        <!-- Y-Axis Labels -->
+                        <text x="32" y="24" font-size="9" fill="#64748b" text-anchor="end">€1000</text>
+                        <text x="32" y="69" font-size="9" fill="#64748b" text-anchor="end">€750</text>
+                        <text x="32" y="114" font-size="9" fill="#64748b" text-anchor="end">€500</text>
+                        <text x="32" y="159" font-size="9" fill="#64748b" text-anchor="end">€0</text>
+
+                        <!-- Bar 1: Zonder Analyse (€800 -> Height ~ 128px out of 135 max) -->
+                        <rect x="70" y="27" width="45" height="128" fill="#94a3b8" rx="4" />
+                        <text x="92.5" y="20" font-size="10" font-weight="bold" fill="#475569" text-anchor="middle">€800</text>
+                        <text x="92.5" y="170" font-size="9" fill="#475569" text-anchor="middle">Zonder Analyse</text>
+
+                        <!-- Bar 2: Met Analyse (€990 -> Height ~ 158px) -->
+                        <rect x="145" y="12" width="45" height="143" fill="#059669" rx="4" />
+                        <text x="167.5" y="5" font-size="10" font-weight="bold" fill="#059669" text-anchor="middle">€990</text>
+                        <text x="167.5" y="170" font-size="9" font-weight="bold" fill="#0f172a" text-anchor="middle">Met Analyse</text>
+                    </svg>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-500 flex justify-between items-center">
+                    <span>Optimalisatie rendement:</span>
+                    <span class="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">+23.75% (€190)</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Notification for feedback -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300 z-50">
+        <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+        <div>
+            <p class="text-sm font-medium">Controle-overzicht gegenereerd</p>
+            <p class="text-xs text-slate-400">Document voor opdrachtgever staat klaar voor verzending.</p>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        function generateReport() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+Opdrachtgever: Woningstichting Open Doors
+Ordertype: MO (Mutatie Onderhoud)
+Locatie: Koninginnelaan 45, Apeldoorn
+Vermelde regels:
+- MO-2001: Stucwerk wanden sausklaar woonkamer
