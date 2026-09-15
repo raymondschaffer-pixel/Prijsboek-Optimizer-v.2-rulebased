@@ -135,6 +135,17 @@
     <script>
         let currentDashboardData = { samenvatting: { aantalBestanden: 0, totaleKosten: "0.00", totaleMarge: "0.00", totaleOmzet: "0.00" }, opdrachten: [] };
 
+        // Lookup dictionary voor correcte omschrijvingen van hoofdregels
+        const omschrijvingenLijst = {
+            "MO-2001": "Montage kozijn en glas",
+            "MO-3002": "Vervangen binnendeur inclusief beslag",
+            "MO-3003": "Herstel hang- en sluitwerk",
+            "MO-3004": "Vervangen ventilatierooster",
+            "MO-4001": "Groot onderhoud keukenblok",
+            "MO-4005": "Vervangen tegelwerk badkamer",
+            "DO-1006": "Periodieke inspectie en kleine nastelwerkzaamheden"
+        };
+
         function toggleOrder(index) {
             const detailsElement = document.getElementById(`details-${index}`);
             const iconElement = document.getElementById(`icon-${index}`);
@@ -237,12 +248,13 @@
             dataObj.opdrachten.forEach((opdracht, index) => {
                 let hoofdregelsHTML = '';
                 opdracht.hoofdregels.forEach(hr => {
+                    const omschrijving = omschrijvingenLijst[hr.code] || hr.omschrijving || "Standaard onderhoudswerkzaamheid";
                     hoofdregelsHTML += `
                     <div class="flex justify-between items-center bg-white border border-slate-200 p-2.5 rounded text-xs mb-2">
                         <div>
                             <span class="bg-slate-800 text-white font-bold px-1.5 py-0.5 rounded text-[10px] mr-2">${hr.code}</span>
-                            <span class="font-medium text-slate-800">Werkorder / Hoofdregel component</span>
-                            <span class="text-slate-500 ml-2">(Aantal: ${hr.quantity})</span>
+                            <span class="font-medium text-slate-800">${omschrijving}</span>
+                            <span class="text-slate-500 ml-2">(Aantal: ${hr.quantity || 1})</span>
                         </div>
                         <span class="font-semibold text-slate-800">€ ${hr.totalPrice.toFixed(2)}</span>
                     </div>`;
