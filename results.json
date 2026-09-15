@@ -1,38 +1,9 @@
 {
   "samenvatting": {
-    "aantalBestanden": 1,
-    "totaleKosten": "150.00",
-    "totaleMarge": "70.00",
-    "totaleOmzet": "220.00"
+    "aantalBestanden": 0,
+    "totaleKosten": "0.00",
+    "totaleMarge": "0.00",
+    "totaleOmzet": "0.00"
   },
-  "opdrachten": [
-    {
-      "bestandsnaam": "handmatige_check.txt",
-      "gedetecteerdeCodes": ["MO-3002"],
-      "origineelBedrag": "150.00",
-      "gegenereerdExtra": "70.00",
-      "nieuweOpdrachtsom": "220.00",
-      "hoofdregels": [
-        {
-          "code": "MO-3002",
-          "quantity": 1,
-          "totalPrice": 150.00
-        }
-      ],
-      "nevenposten": [
-        {
-          "code": "DO-2005",
-          "description": "Afvoeren oude binnendeur en restafval",
-          "quantity": 1,
-          "totalPrice": 25.00
-        },
-        {
-          "code": "DO-2006",
-          "description": "Stel- en paswerkzaamheden extra kozijn/deur",
-          "quantity": 1,
-          "totalPrice": 45.00
-        }
-      ]
-    }
-  ]
+  "opdrachten": []
 }
