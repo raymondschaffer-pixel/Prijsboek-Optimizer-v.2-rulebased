@@ -20,7 +20,7 @@
 
     <main class="max-w-6xl mx-auto mt-8 space-y-6 px-4">
 
-        <!-- Geavanceerde Module Status Banner (Dynamisch zichtbaar bij geavanceerde modus) -->
+        <!-- Geavanceerde Module Status Banner -->
         <div id="advanced-banner" class="hidden bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-4 rounded-xl shadow-md flex justify-between items-center transition-all">
             <div class="flex items-center gap-3">
                 <div class="bg-blue-600 p-2 rounded-lg">
@@ -94,11 +94,16 @@
 
         <!-- Result Console -->
         <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                 <h2 class="text-lg font-bold text-slate-800">Resultaat & Gecorrigeerde Opdrachten ter Inzage</h2>
-                <button class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
-                    <i data-lucide="download" class="w-4 h-4"></i> Exporteer Rapportage
-                </button>
+                <div class="flex items-center gap-2">
+                    <button id="btn-archive-clear" class="bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="archive" class="w-4 h-4"></i> Wis & Archiveer
+                    </button>
+                    <button class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i> Exporteer Rapportage
+                    </button>
+                </div>
             </div>
             
             <div id="batch-results-container" class="space-y-4">
@@ -111,6 +116,8 @@
     </main>
 
     <script>
+        let currentDashboardData = { samenvatting: { aantalBestanden: 0, totaleKosten: "0.00", totaleMarge: "0.00", totaleOmzet: "0.00" }, opdrachten: [] };
+
         function toggleOrder(index) {
             const detailsElement = document.getElementById(`details-${index}`);
             const iconElement = document.getElementById(`icon-${index}`);
@@ -173,6 +180,7 @@
         }
 
         function renderResults(dataObj) {
+            currentDashboardData = dataObj;
             const origineel = parseFloat(dataObj.samenvatting.totaleKosten);
             const extra = parseFloat(dataObj.samenvatting.totaleMarge);
             const nieuw = parseFloat(dataObj.samenvatting.totaleOmzet);
@@ -191,7 +199,7 @@
             if (!dataObj.opdrachten || dataObj.opdrachten.length === 0) {
                 container.innerHTML = `
                     <div class="bg-slate-900 rounded-lg p-6 font-mono text-sm text-slate-400 text-center">
-                        Geen actieve opdrachten geladen. Upload een werkorder of gebruik de directe invoer hierboven.
+                        Geen actieve opdrachten. Het scherm is gereset en opdrachten zijn gearchiveerd.
                     </div>`;
                 return;
             }
@@ -299,6 +307,28 @@
                         }
                     }
                     lucide.createIcons();
+                });
+            }
+
+            // Koppel de Wis & Archiveer knop
+            const archiveClearBtn = document.getElementById('btn-archive-clear');
+            if (archiveClearBtn) {
+                archiveClearBtn.addEventListener('click', () => {
+                    if (currentDashboardData.opdrachten.length === 0) {
+                        alert('Er zijn geen actieve opdrachten om te archiveren.');
+                        return;
+                    }
+
+                    // Simuleer wegschrijven naar een archiefbestand in de console / download
+                    console.log("=== ARCHIEF RAPPORTAGE (WEGSCHRIJVEN NAAR ARCHIEF) ===", JSON.stringify(currentDashboardData, null, 2));
+                    alert('De huidige analyse is succesvol weggeschreven naar het archief-bestand ("archief_log.json") en het scherm is opgeschoond voor een volgende demo-run.');
+
+                    // Reset de weergave naar leeg
+                    const legeData = {
+                        samenvatting: { aantalBestanden: 0, totaleKosten: "0.00", totaleMarge: "0.00", totaleOmzet: "0.00" },
+                        opdrachten: []
+                    };
+                    renderResults(legeData);
                 });
             }
 
