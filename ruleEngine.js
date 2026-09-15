@@ -1,92 +1,82 @@
-// File: ruleEngine.js
-const fs = require('fs');
-const path = require('path');
+/**
+ * Rule Engine voor Prijsboek & Workflow Optimizer
+ * Ondersteunt rule-sets met strikte ruimte-context en trigger-matching.
+ */
 
-// Laad parameters.json (regels en afhankelijkheden)
-const parametersPath = path.join(__dirname, 'parameters.json');
-let parametersData = { rule_sets: [] };
-if (fs.existsSync(parametersPath)) {
-  parametersData = JSON.parse(fs.readFileSync(parametersPath, 'utf-8'));
-}
+function evaluateOrder(mainOrder, parameters) {
+  const matchedTasks = [];
+  const mainCode = (mainOrder.code || "").trim();
+  const mainDesc = (mainOrder.omschrijving || mainOrder.description || "").toLowerCase();
+  const mainQty = mainOrder.aantal || mainOrder.quantity || 1;
 
-// Simpele helper om een fictief prijzenboek te simuleren of in te lezen
-function getStandardPrice(code) {
-  // Standaard basisprijzen voor hoofdregels ter demonstratie
-  const priceBook = {
-    "MO-2001": 180.00,
-    "MO-3002": 150.00,
-    "MO-3003": 95.00,
-    "MO-3004": 40.00,
-    "MO-4001": 450.00,
-    "MO-4005": 650.00
-  };
-  return priceBook[code] || 50.00; // Fallback prijs als code niet direct gevonden wordt
-}
+  // Bepaal de context van de hoofdregel (ruimte/type)
+  let orderContext = 'algemeen';
+  if (mainDesc.includes('badkamer') || mainDesc.includes('tegelwerk') || mainCode.startsWith('MO-4001')) {
+    orderContext = 'badkamer';
+  } else if (mainDesc.includes('keuken') || mainDesc.includes('aanrecht') || mainCode.startsWith('MO-4005')) {
+    orderContext = 'keuken';
+  } else if (mainDesc.includes('deur') || mainDesc.includes('kozijn') || mainCode.startsWith('MO-3002') || mainCode.startsWith('MO-3003')) {
+    orderContext = 'timmerwerk';
+  } else if (mainDesc.includes('stuc') || mainDesc.includes('sausklaar') || mainCode.startsWith('MO-2001')) {
+    orderContext, 'stucwerk';
+  }
 
-function processOrder(orderData) {
-  let originalAmount = 0;
-  const triggeredItemsMap = new Map();
-  const processedMainCodes = new Set();
+  // Doorloop alle rule_sets in parameters.json
+  if (parameters && parameters.rule_sets) {
+    parameters.rule_sets.forEach(ruleSet => {
+      let isTriggered = false;
 
-  // Stap 1: Bepaal de eenheidsprijs en het oorspronkelijke bedrag van de hoofdregels
-  orderData.items.forEach(item => {
-    const unitPrice = getStandardPrice(item.code);
-    item.unitPrice = unitPrice;
-    item.totalPrice = unitPrice * (item.quantity || 1);
-    originalAmount += item.totalPrice;
-    processedMainCodes.add(item.code);
-  });
+      // 1. Check op basis van trigger codes
+      if (ruleSet.trigger_codes && ruleSet.trigger_codes.includes(mainCode)) {
+        isTriggered = true;
+      }
 
-  // Stap 2: Controleer welke regels triggeren op ontbrekende nevenposten
-  parametersData.rule_sets.forEach(ruleSet => {
-    // Check of een van de trigger codes aanwezig is in de opdracht
-    const hasTriggerCode = ruleSet.trigger_codes.some(code => processedMainCodes.has(code));
-    
-    // Check optioneel op trefwoorden in de ruwe tekst
-    const hasKeyword = ruleSet.trigger_keywords && ruleSet.trigger_keywords.some(keyword => 
-      orderData.text && orderData.text.toLowerCase().includes(keyword.toLowerCase())
-    );
+      // 2. Check op basis van trefwoorden in de omschrijving
+      if (!isTriggered && ruleSet.trigger_keywords) {
+        isTriggered = ruleSet.trigger_keywords.some(keyword => mainDesc.includes(keyword.toLowerCase()));
+      }
 
-    if (hasTriggerCode || hasKeyword) {
-      ruleSet.dependent_items.forEach(dep => {
-        // Voorkom dubbele toevoeging als de nevenpost al op de opdracht staat
-        if (!processedMainCodes.has(dep.code)) {
-          let calculatedQty = dep.default_qty || 1;
+      if (isTriggered) {
+        // Extra veiligheidscheck: Voorkom dat keuken-rules op badkamer-orders afgaan (en vice versa)
+        let isContextValid = true;
+        const setId = ruleSet.rule_id || "";
 
-          if (dep.quantity_rule === 'MATCH_MAIN_QTY') {
-            calculatedQty = orderData.items[0] ? orderData.items[0].quantity : 1;
-          }
-
-          const totalPrice = calculatedQty * dep.unit_price;
-
-          // Voeg toe aan de lijst van gegenereerde nevenposten (uniek op code)
-          if (!triggeredItemsMap.has(dep.code)) {
-            triggeredItemsMap.set(dep.code, {
-              code: dep.code,
-              description: dep.description,
-              quantity: calculatedQty,
-              unitPrice: dep.unit_price,
-              totalPrice: totalPrice,
-              ruleId: ruleSet.rule_id
-            });
-          }
+        if (setId.includes('KEUKEN') && !mainDesc.includes('keuken') && !mainCode.startsWith('MO-4005')) {
+          isContextValid = false;
         }
-      });
-    }
-  });
+        if (setId.includes('BADKAMER') && !mainDesc.includes('badkamer') && !mainDesc.includes('tegelwerk') && !mainCode.startsWith('MO-4001')) {
+          isContextValid = false;
+        }
 
-  const generatedItems = Array.from(triggeredItemsMap.values());
-  const extraAmount = generatedItems.reduce((sum, item) => sum + item.totalPrice, 0);
-  const newTotalAmount = originalAmount + extraAmount;
+        if (isContextValid && ruleSet.dependent_items) {
+          ruleSet.dependent_items.forEach(item => {
+            // Bereken hoeveelheid op basis van de regelregels
+            let calculatedQty = mainQty;
+            
+            if (item.quantity_rule === 'FIXED_DEFAULT') {
+              calculatedQty = item.default_qty || 1;
+            } else if (item.quantity_rule === 'MATCH_MAIN_QTY') {
+              calculatedQty = mainQty;
+            } else if (item.quantity_rule === 'CUSTOM_PARAM_OR_ESTIMATE' && item.default_ratio) {
+              calculatedQty = Math.ceil(mainQty * item.default_ratio);
+            }
 
-  return {
-    orderId: orderData.id,
-    originalAmount,
-    extraAmount,
-    newTotalAmount,
-    mainItems: orderData.items,
-    generatedItems
-  };
+            matchedTasks.push({
+              code: item.code,
+              omschrijving: item.description,
+              aantal: calculatedQty,
+              prijs: item.unit_price,
+              totaal: calculatedQty * item.unit_price
+            });
+          });
+        }
+      }
+    });
+  }
+
+  return matchedTasks;
 }
 
-module.exports = { processOrder };
+module.exports = {
+  evaluateOrder
+};
