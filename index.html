@@ -27,17 +27,17 @@
                 <h2 class="text-lg font-bold text-slate-800 mb-1">Bestand / Werkorder Upload</h2>
                 <p class="text-sm text-slate-500 mb-4">Upload een inkomende werkorder (TXT/PDF simulatie) of kies een voorbeeld.</p>
                 <div class="flex items-center gap-3 mb-4">
-                    <input type="file" class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
+                    <input type="file" id="file-upload-input" class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
                 </div>
-                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors">Analyseer Werkorder</button>
+                <button id="btn-analyze-file" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors">Analyseer Werkorder</button>
             </div>
 
             <!-- Text Input Box -->
             <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
                 <h2 class="text-lg font-bold text-slate-800 mb-1">E-mail / Tekst Invoer Simulatie</h2>
                 <p class="text-sm text-slate-500 mb-4">Plak hier de binnenkomende e-mail of opdrachttekst van de opdrachtgever.</p>
-                <textarea class="w-full border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none mb-4" rows="3" placeholder="Plak hier bijvoorbeeld: - MO-3002: Vervangen binnendeur..."></textarea>
-                <button class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2 rounded-lg transition-colors">Verwerk Directe Invoer</button>
+                <textarea id="text-input-area" class="w-full border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none mb-4" rows="3" placeholder="Plak hier bijvoorbeeld: - MO-3002: Vervangen binnendeur..."></textarea>
+                <button id="btn-process-text" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2 rounded-lg transition-colors">Verwerk Directe Invoer</button>
             </div>
 
         </div>
@@ -109,7 +109,7 @@
             }
         }
 
-        function simulateEngine(text) {
+        function simulateEngine(text, filename = "handmatige_invoer.txt") {
             const lowerText = text.toLowerCase();
             const foundCodes = [];
             const matches = text.match(/MO-\d{4}|DO-\d{4}/g);
@@ -120,10 +120,10 @@
             }
 
             if (foundCodes.length === 0) {
-                if (lowerText.includes('deur')) foundCodes.push('MO-3002');
-                else if (lowerText.includes('badkamer') || lowerText.includes('tegelwerk')) foundCodes.push('MO-4001');
-                else if (lowerText.includes('keuken')) foundCodes.push('MO-4005');
-                else if (lowerText.includes('stuc')) foundCodes.push('MO-2001');
+                if (lowerText.includes('deur') || filename.toLowerCase().includes('deur')) foundCodes.push('MO-3002');
+                else if (lowerText.includes('badkamer') || lowerText.includes('tegelwerk') || filename.toLowerCase().includes('badkamer')) foundCodes.push('MO-4001');
+                else if (lowerText.includes('keuken') || filename.toLowerCase().includes('keuken')) foundCodes.push('MO-4005');
+                else if (lowerText.includes('stuc') || filename.toLowerCase().includes('stuc')) foundCodes.push('MO-2001');
                 else foundCodes.push('MO-3002');
             }
 
@@ -147,7 +147,7 @@
             }
 
             return {
-                bestandsnaam: "handmatige_invoer.txt",
+                bestandsnaam: filename,
                 gedetecteerdeCodes: foundCodes,
                 origineelBedrag: origineel.toFixed(2),
                 gegenereerdExtra: extra.toFixed(2),
@@ -249,19 +249,21 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Initiële data inladen
             fetch('results.json')
                 .then(response => response.json())
                 .then(data => renderResults(data))
                 .catch(() => {
                     document.getElementById('batch-results-container').innerHTML = `
                         <div class="bg-red-50 text-red-600 p-4 rounded-lg text-sm border border-red-200">
-                            Geen initiële data gevonden. Plak hiernaast een tekst om direct te analyseren.
+                            Geen initiële data gevonden. Upload een bestand of plak een tekst om te analyseren.
                         </div>`;
                     lucide.createIcons();
                 });
 
-            const textInputBtn = document.querySelector('button.bg-slate-800');
-            const textArea = document.querySelector('textarea');
+            // Koppel knop: Verwerk Directe Invoer (Tekst vlak)
+            const textInputBtn = document.getElementById('btn-process-text');
+            const textArea = document.getElementById('text-input-area');
 
             if (textInputBtn && textArea) {
                 textInputBtn.addEventListener('click', () => {
@@ -271,18 +273,52 @@
                         return;
                     }
 
-                    const geanalyseerdeOpdracht = simulateEngine(invoerTekst);
+                    const geanalyseerdeOpdracht = simulateEngine(invoerTekst, "handmatige_invoer.txt");
                     const dynamischDashboard = {
                         samenvatting: {
                             aantalBestanden: 1,
                             totaleKosten: geanalyseerdeOpdracht.origineelBedrag,
-                            totaleMarge: geanalyseerdOpdracht.gegenereerdExtra,
+                            totaleMarge: geanalyseerdeOpdracht.gegenereerdExtra,
                             totaleOmzet: geanalyseerdeOpdracht.nieuweOpdrachtsom
                         },
                         opdrachten: [geanalyseerdeOpdracht]
                     };
 
                     renderResults(dynamischDashboard);
+                });
+            }
+
+            // Koppel knop: Analyseer Werkorder (Bestand uploaden)
+            const fileAnalyzeBtn = document.getElementById('btn-analyze-file');
+            const fileInput = document.getElementById('file-upload-input');
+
+            if (fileAnalyzeBtn && fileInput) {
+                fileAnalyzeBtn.addEventListener('click', () => {
+                    if (!fileInput.files || fileInput.files.length === 0) {
+                        alert('Selecteer eerst een bestand om te uploaden.');
+                        return;
+                    }
+
+                    const selectedFile = fileInput.files[0];
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        const fileContent = e.target.result;
+                        const geanalyseerdeOpdracht = simulateEngine(fileContent, selectedFile.name);
+                        const dynamischDashboard = {
+                            samenvatting: {
+                                aantalBestanden: 1,
+                                totaleKosten: geanalyseerdeOpdracht.origineelBedrag,
+                                totaleMarge: geanalyseerdeOpdracht.gegenereerdExtra,
+                                totaleOmzet: geanalyseerdeOpdracht.nieuweOpdrachtsom
+                            },
+                            opdrachten: [geanalyseerdeOpdracht]
+                        };
+
+                        renderResults(dynamischDashboard);
+                    };
+
+                    reader.readAsText(selectedFile);
                 });
             }
         });
