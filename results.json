@@ -15,26 +15,22 @@
       "hoofdregels": [
         {
           "code": "MO-3002",
-          "omschrijving": "Vervangen binnendeur inclusief beslag",
-          "aantal": 1,
-          "prijs": 150.00,
-          "totaal": 150.00
+          "quantity": 1,
+          "totalPrice": 150.00
         }
       ],
       "nevenposten": [
         {
           "code": "DO-2005",
-          "omschrijving": "Afvoeren oude binnendeur en restafval",
-          "aantal": 1,
-          "prijs": 25.00,
-          "totaal": 25.00
+          "description": "Afvoeren oude binnendeur en restafval",
+          "quantity": 1,
+          "totalPrice": 25.00
         },
         {
           "code": "DO-2006",
-          "omschrijving": "Stel- en paswerkzaamheden extra kozijn/deur",
-          "aantal": 1,
-          "prijs": 45.00,
-          "totaal": 45.00
+          "description": "Stel- en paswerkzaamheden extra kozijn/deur",
+          "quantity": 1,
+          "totalPrice": 45.00
         }
       ]
     }
