@@ -12,11 +12,27 @@
     <header class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shadow-md">
         <h1 class="text-xl font-bold tracking-wide">Prijsboek & Workflow Optimizer</h1>
         <div class="flex items-center gap-3">
-            <button id="btn-toggle-rights" class="bg-emerald-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full transition-colors cursor-pointer">Rechten Actief</button>
+            <button id="btn-toggle-rights" class="bg-emerald-500 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:bg-emerald-400">
+                <i data-lucide="zap" class="w-3.5 h-3.5"></i> Standaard Modus
+            </button>
         </div>
     </header>
 
     <main class="max-w-6xl mx-auto mt-8 space-y-6 px-4">
+
+        <!-- Geavanceerde Module Status Banner (Dynamisch zichtbaar bij geavanceerde modus) -->
+        <div id="advanced-banner" class="hidden bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-4 rounded-xl shadow-md flex justify-between items-center transition-all">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 p-2 rounded-lg">
+                    <i data-lucide="cpu" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm">Geavanceerde Module: Regel-Engine & Scoping Actief</h3>
+                    <p class="text-xs text-blue-200">Diepgaande context-analyse, ruimte-scoping en marge-optimalisatie zijn ingeschakeld.</p>
+                </div>
+            </div>
+            <span class="bg-blue-500/30 border border-blue-400/40 text-blue-200 text-xs px-3 py-1 rounded-full font-mono">PRO-MODE v2.0</span>
+        </div>
 
         <!-- Top Row: Upload & Text Input -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -48,7 +64,7 @@
                     <h2 class="text-lg font-bold text-slate-800">Management & Rendementsanalyse</h2>
                     <p class="text-sm text-slate-500">Cumulatief overzicht van verwerkte opdrachten en gerecupereerde marge.</p>
                 </div>
-                <span class="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">Rechten Actief</span>
+                <span id="kpi-status-badge" class="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">Standaard Overzicht</span>
             </div>
 
             <!-- KPIs -->
@@ -256,19 +272,33 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Koppel Rechten In-/Uitschakelen knop
+            // Koppel Geavanceerde Module / Rechten Wissel knop
             const rightsBtn = document.getElementById('btn-toggle-rights');
+            const advancedBanner = document.getElementById('advanced-banner');
+            const kpiStatusBadge = document.getElementById('kpi-status-badge');
+
             if (rightsBtn) {
-                let rightsActive = true;
+                let isAdvanced = false;
                 rightsBtn.addEventListener('click', () => {
-                    rightsActive = !rightsActive;
-                    if (rightsActive) {
-                        rightsBtn.innerText = "Rechten Actief";
-                        rightsBtn.className = "bg-emerald-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full transition-colors cursor-pointer";
+                    isAdvanced = !isAdvanced;
+                    if (isAdvanced) {
+                        rightsBtn.innerHTML = '<i data-lucide="cpu" class="w-3.5 h-3.5"></i> Geavanceerde Module Actief';
+                        rightsBtn.className = "bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:bg-blue-400";
+                        if (advancedBanner) advancedBanner.classList.remove('hidden');
+                        if (kpiStatusBadge) {
+                            kpiStatusBadge.innerText = "Geavanceerde Modus (Pro)";
+                            kpiStatusBadge.className = "bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full";
+                        }
                     } else {
-                        rightsBtn.innerText = "Rechten Uitgeschakeld";
-                        rightsBtn.className = "bg-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded-full transition-colors cursor-pointer";
+                        rightsBtn.innerHTML = '<i data-lucide="zap" class="w-3.5 h-3.5"></i> Standaard Modus';
+                        rightsBtn.className = "bg-emerald-500 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:bg-emerald-400";
+                        if (advancedBanner) advancedBanner.classList.add('hidden');
+                        if (kpiStatusBadge) {
+                            kpiStatusBadge.innerText = "Standaard Overzicht";
+                            kpiStatusBadge.className = "bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full";
+                        }
                     }
+                    lucide.createIcons();
                 });
             }
 
