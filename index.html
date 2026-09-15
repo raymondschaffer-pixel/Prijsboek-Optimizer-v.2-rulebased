@@ -20,7 +20,7 @@
 
     <main class="max-w-6xl mx-auto mt-8 space-y-6 px-4">
 
-        <!-- Geavanceerde Module Status Banner -->
+        <!-- Geavanceerde Module Status Banner (Standaard verborgen) -->
         <div id="advanced-banner" class="hidden bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-4 rounded-xl shadow-md flex justify-between items-center transition-all">
             <div class="flex items-center gap-3">
                 <div class="bg-blue-600 p-2 rounded-lg">
@@ -28,7 +28,7 @@
                 </div>
                 <div>
                     <h3 class="font-bold text-sm">Geavanceerde Module: Regel-Engine & Scoping Actief</h3>
-                    <p class="text-xs text-blue-200">Diepgaande context-analyse, ruimte-scoping en marge-optimalisatie zijn ingeschakeld.</p>
+                    <p class="text-xs text-blue-200">Diepgaande context-analyse, ruimte-scoping en cumulatieve marge-optimalisatie zijn ingeschakeld.</p>
                 </div>
             </div>
             <span class="bg-blue-500/30 border border-blue-400/40 text-blue-200 text-xs px-3 py-1 rounded-full font-mono">PRO-MODE v2.0</span>
@@ -57,18 +57,18 @@
 
         </div>
 
-        <!-- Management KPI Row -->
-        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-            <div class="flex justify-between items-center mb-4">
+        <!-- Management KPI & Visualisatie Row (Standaard verborgen, zichtbaar in Pro-modus) -->
+        <div id="management-section" class="hidden bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-6 transition-all">
+            <div class="flex justify-between items-center">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800">Management & Rendementsanalyse</h2>
                     <p class="text-sm text-slate-500">Cumulatief overzicht van verwerkte opdrachten en gerecupereerde marge.</p>
                 </div>
-                <span id="kpi-status-badge" class="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">Standaard Overzicht</span>
+                <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">Geavanceerde Modus (Pro)</span>
             </div>
 
             <!-- KPIs -->
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 pt-4 border-t border-slate-100">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 pt-2 border-t border-slate-100">
                 <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
                     <span class="text-xs font-semibold text-slate-500 block mb-1">TOTAAL OPDRACHTEN</span>
                     <span id="kpi-totaal" class="text-2xl font-bold text-slate-800">0</span>
@@ -88,6 +88,23 @@
                 <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
                     <span class="text-xs font-semibold text-emerald-600 block mb-1">RENDEMENTSWINST</span>
                     <span id="kpi-winst" class="text-2xl font-bold text-emerald-600">0.0%</span>
+                </div>
+            </div>
+
+            <!-- Visueel Staafdiagram (Cumulatieve Marge-opbouw) -->
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
+                <div class="flex justify-between items-center text-xs font-bold text-slate-600 uppercase tracking-wider">
+                    <span>Cumulatieve Financiële Opbouw (Origineel vs. Aanvullend)</span>
+                    <span id="chart-ratio-text" class="text-emerald-600 font-mono">0% Extra Rendement</span>
+                </div>
+                <!-- Staafdiagram Container -->
+                <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden flex shadow-inner">
+                    <div id="bar-origineel" class="bg-slate-700 h-full transition-all duration-500" style="width: 100%;" title="Origineel"></div>
+                    <div id="bar-extra" class="bg-emerald-500 h-full transition-all duration-500" style="width: 0%;" title="Extra Nevenposten"></div>
+                </div>
+                <div class="flex justify-between text-[11px] text-slate-500 font-medium">
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block"></span> Oorspronkelijke Somwaarde</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Somwaarde Aanvullende Regels (Marge)</span>
                 </div>
             </div>
         </div>
@@ -193,6 +210,19 @@
             document.getElementById('kpi-nieuw').innerText = formatEuro(nieuw);
             document.getElementById('kpi-winst').innerText = '+' + winstPerc + '%';
 
+            // Update staafdiagram percentages cumulatief
+            if (nieuw > 0) {
+                const percOrigineel = Math.round((origineel / nieuw) * 100);
+                const percExtra = 100 - percOrigineel;
+                document.getElementById('bar-origineel').style.width = percOrigineel + '%';
+                document.getElementById('bar-extra').style.width = percExtra + '%';
+                document.getElementById('chart-ratio-text').innerText = winstPerc + '% Extra Rendement';
+            } else {
+                document.getElementById('bar-origineel').style.width = '100%';
+                document.getElementById('bar-extra').style.width = '0%';
+                document.getElementById('chart-ratio-text').innerText = '0% Extra Rendement';
+            }
+
             const container = document.getElementById('batch-results-container');
             container.innerHTML = ''; 
 
@@ -280,10 +310,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Koppel Geavanceerde Module / Rechten Wissel knop
+            // Koppel Geavanceerde Module / Standaard Modus wissel knop
             const rightsBtn = document.getElementById('btn-toggle-rights');
             const advancedBanner = document.getElementById('advanced-banner');
-            const kpiStatusBadge = document.getElementById('kpi-status-badge');
+            const managementSection = document.getElementById('management-section');
 
             if (rightsBtn) {
                 let isAdvanced = false;
@@ -293,18 +323,12 @@
                         rightsBtn.innerHTML = '<i data-lucide="cpu" class="w-3.5 h-3.5"></i> Geavanceerde Module Actief';
                         rightsBtn.className = "bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:bg-blue-400";
                         if (advancedBanner) advancedBanner.classList.remove('hidden');
-                        if (kpiStatusBadge) {
-                            kpiStatusBadge.innerText = "Geavanceerde Modus (Pro)";
-                            kpiStatusBadge.className = "bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full";
-                        }
+                        if (managementSection) managementSection.classList.remove('hidden');
                     } else {
                         rightsBtn.innerHTML = '<i data-lucide="zap" class="w-3.5 h-3.5"></i> Standaard Modus';
                         rightsBtn.className = "bg-emerald-500 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:bg-emerald-400";
                         if (advancedBanner) advancedBanner.classList.add('hidden');
-                        if (kpiStatusBadge) {
-                            kpiStatusBadge.innerText = "Standaard Overzicht";
-                            kpiStatusBadge.className = "bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full";
-                        }
+                        if (managementSection) managementSection.classList.add('hidden');
                     }
                     lucide.createIcons();
                 });
@@ -319,11 +343,9 @@
                         return;
                     }
 
-                    // Simuleer wegschrijven naar een archiefbestand in de console / download
                     console.log("=== ARCHIEF RAPPORTAGE (WEGSCHRIJVEN NAAR ARCHIEF) ===", JSON.stringify(currentDashboardData, null, 2));
                     alert('De huidige analyse is succesvol weggeschreven naar het archief-bestand ("archief_log.json") en het scherm is opgeschoond voor een volgende demo-run.');
 
-                    // Reset de weergave naar leeg
                     const legeData = {
                         samenvatting: { aantalBestanden: 0, totaleKosten: "0.00", totaleMarge: "0.00", totaleOmzet: "0.00" },
                         opdrachten: []
