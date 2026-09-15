@@ -1,1 +1,42 @@
-
+{
+  "samenvatting": {
+    "aantalBestanden": 1,
+    "totaleKosten": "150.00",
+    "totaleMarge": "70.00",
+    "totaleOmzet": "220.00"
+  },
+  "opdrachten": [
+    {
+      "bestandsnaam": "handmatige_check.txt",
+      "gedetecteerdeCodes": ["MO-3002"],
+      "origineelBedrag": "150.00",
+      "gegenereerdExtra": "70.00",
+      "nieuweOpdrachtsom": "220.00",
+      "hoofdregels": [
+        {
+          "code": "MO-3002",
+          "omschrijving": "Vervangen binnendeur inclusief beslag",
+          "aantal": 1,
+          "prijs": 150.00,
+          "totaal": 150.00
+        }
+      ],
+      "nevenposten": [
+        {
+          "code": "DO-2005",
+          "omschrijving": "Afvoeren oude binnendeur en restafval",
+          "aantal": 1,
+          "prijs": 25.00,
+          "totaal": 25.00
+        },
+        {
+          "code": "DO-2006",
+          "omschrijving": "Stel- en paswerkzaamheden extra kozijn/deur",
+          "aantal": 1,
+          "prijs": 45.00,
+          "totaal": 45.00
+        }
+      ]
+    }
+  ]
+}
